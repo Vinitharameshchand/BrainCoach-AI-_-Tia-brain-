@@ -1,0 +1,13 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+.env
+
+# App Specific
+backend/uploads/
+backend/braincoach.db
+
+# OS
+.DS_Store
+node_modules/

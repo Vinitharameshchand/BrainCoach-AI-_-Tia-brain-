@@ -1,0 +1,6 @@
+flask
+flask-cors
+python-dotenv
+azure-cognitiveservices-vision-computervision
+msrest
+gunicorn
