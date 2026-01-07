@@ -8,13 +8,6 @@
 
 **BrainCoach AI** is an interactive, AI-powered web application designed to train kids' concentration using cognitive exercises. Inspired by the **TIA Brain** methodology, it features a split-screen interface where users engage with brain training tasks while their engagement and hand movements are tracked in real-time using **MediaPipe Hands**.
 
----
-
-## 🚀 Live Demo
-
-Check out the live application: **[braincoach.netlify.app](https://braincoach.netlify.app)**
-
----
 
 ## 🌟 Key Features
 
@@ -127,6 +120,13 @@ Contributions are welcome! Please follow these steps:
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+---
+
+## 🚀 Live Demo
+
+Check out the live application: sooonnn 
 
 ---
 
