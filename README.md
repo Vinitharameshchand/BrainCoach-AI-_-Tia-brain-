@@ -132,7 +132,7 @@ Check out the live application: sooonnn
 
 <div align="center">
 
-**Built with ❤️ for better concentration.**
+
 
 </div>
 # BrainCoach-AI-_-Tia-brain-
