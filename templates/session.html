@@ -6,18 +6,22 @@
 <style>
     .session-container {
         display: flex;
-        height: 80vh;
-        gap: 20px;
+        height: 75vh;
+        gap: 15px;
+        background: #f1f5f9;
+        padding: 15px;
+        border-radius: 30px;
+        box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
     }
 
-    .exercise-view,
-    .camera-view {
+    .view-card {
         flex: 1;
         position: relative;
         background: #000;
-        border-radius: 15px;
+        border-radius: 20px;
         overflow: hidden;
-        border: 2px solid #334155;
+        border: 4px solid white;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     }
 
     video {
@@ -32,85 +36,170 @@
         left: 0;
         width: 100%;
         height: 100%;
+        z-index: 5;
     }
 
-    .overlay {
+    .view-label {
         position: absolute;
-        top: 20px;
-        left: 20px;
+        top: 15px;
+        left: 15px;
         z-index: 10;
-        padding: 5px 15px;
-        border-radius: 20px;
-        background: rgba(0, 0, 0, 0.5);
+        padding: 6px 16px;
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.9);
+        color: #1e293b;
+        font-weight: 700;
+        font-size: 0.85rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
-    .accuracy-indicator {
+    .accuracy-ring-container {
         position: absolute;
-        bottom: 20px;
-        right: 20px;
-        font-size: 2rem;
-        font-weight: bold;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
+        bottom: 25px;
+        right: 25px;
+        z-index: 10;
+        width: 120px;
+        height: 120px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 50%;
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(5px);
     }
 
-    .feedback-toast {
+    .accuracy-text {
+        position: absolute;
+        text-align: center;
+    }
+
+    .accuracy-text .val {
+        display: block;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #1e293b;
+    }
+
+    .accuracy-text .lbl {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: #64748b;
+    }
+
+    .feedback-animation {
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        font-size: 3rem;
-        font-weight: 800;
-        display: none;
+        z-index: 20;
+        font-size: 5rem;
         pointer-events: none;
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        opacity: 0;
+    }
+
+    .feedback-animation.show {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+
+    .timer-badge {
+        background: white;
+        padding: 8px 24px;
+        border-radius: 30px;
+        font-weight: 800;
+        font-size: 1.2rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        color: var(--primary);
+    }
+
+    .gutter {
+        background-color: transparent !important;
+        background-repeat: no-repeat;
+        background-position: 50%;
+        cursor: col-resize;
+        width: 10px;
+        border-radius: 5px;
+        margin: 0 5px;
+        transition: background-color 0.2s;
+    }
+
+    .gutter:hover {
+        background-color: var(--primary) !important;
+        opacity: 0.3;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="row mb-3">
-    <div class="col d-flex justify-content-between align-items-center">
-        <h4>Exercise: {{ exercise.title }} (Child: {{ child.name }})</h4>
-        <div id="timer" class="h4 mb-0 text-primary">01:00</div>
+<div class="row align-items-center mb-4">
+    <div class="col">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}"
+                        class="text-decoration-none">Dashboard</a></li>
+                <li class="breadcrumb-item active">{{ exercise.title }}</li>
+            </ol>
+        </nav>
+        <h3 class="fw-bold mb-0">{{ child.name }}'s Focus Adventure ✨</h3>
+    </div>
+    <div class="col-auto">
+        <div id="timer" class="timer-badge">01:00</div>
     </div>
 </div>
 
 <div class="session-container" id="split-container">
-    <div class="exercise-view" id="left-view">
-        <div class="overlay">Demo Video</div>
-        <!-- Sample video url or placeholder -->
+    <div class="view-card shadow-sm" id="left-view">
+        <div class="view-label">Watch & Copy 📺</div>
         <video id="exerciseVideo" src="{{ exercise.video_url or 'https://www.w3schools.com/html/mov_bbb.mp4' }}" loop
             muted autoplay></video>
     </div>
-    <div class="camera-view" id="right-view">
-        <div class="overlay">Live Camera</div>
+    <div class="view-card shadow-sm" id="right-view">
+        <div class="view-label">Your Live Feed 🎥</div>
         <video id="webcam" autoplay playsinline></video>
         <canvas id="output_canvas"></canvas>
-        <div id="accuracy-display" class="accuracy-indicator text-success">Acc: 0%</div>
-        <div id="feedback" class="feedback-toast">Perfect!</div>
+
+        <!-- Premium Accuracy Ring -->
+        <div class="accuracy-ring-container glow-success" id="acc-ring">
+            <svg class="progress-ring" width="100" height="100">
+                <circle class="progress-ring__circle" stroke="#10b981" stroke-width="8" fill="transparent" r="42"
+                    cx="50" cy="50" style="stroke-dasharray: 263.894; stroke-dashoffset: 263.894;" />
+            </svg>
+            <div class="accuracy-text">
+                <span class="val" id="acc-val">0%</span>
+                <span class="lbl">Focus</span>
+            </div>
+        </div>
+
+        <div id="feedback-emoji" class="feedback-animation">⭐</div>
     </div>
 </div>
 
-<div class="row mt-4">
-    <div class="col text-center">
-        <button id="start-btn" class="btn btn-lg btn-success px-5">Start Training</button>
-        <button id="stop-btn" class="btn btn-lg btn-danger px-5" style="display:none">Stop Session</button>
+<div class="row mt-5 justify-content-center">
+    <div class="col-auto text-center">
+        <button id="start-btn" class="btn btn-primary btn-lg rounded-pill px-5 shadow-lg py-3">
+            <span class="fs-5">Start the Adventure! 🚀</span>
+        </button>
+        <button id="stop-btn" class="btn btn-danger btn-lg rounded-pill px-5 shadow-lg py-3" style="display:none">
+            <span class="fs-5">End Adventure 🏁</span>
+        </button>
     </div>
 </div>
 
-<!-- Hidden inputs for session tracking -->
 <input type="hidden" id="session_id" value="{{ session_id }}">
 <input type="hidden" id="accuracy_threshold" value="{{ exercise.accuracy_threshold }}">
 <input type="hidden" id="duration" value="{{ exercise.duration_seconds }}">
 {% endblock %}
 
 {% block extra_js %}
-<!-- MediaPipe Hands dependencies -->
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
-<!-- Split.js for the split view -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.5/split.min.js"></script>
-<!-- Howler.js for audio feedback -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
 
 <script type="module" src="{{ url_for('static', filename='js/hands.js') }}"></script>

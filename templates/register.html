@@ -3,32 +3,48 @@
 {% block title %}Register - BrainCoach AI{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
+<div class="row justify-content-center align-items-center" style="min-height: 80vh;">
     <div class="col-md-6">
-        <div class="card p-4 mt-5">
-            <h3 class="text-center mb-4">Create Parent Account</h3>
+        <div class="card p-5 shadow-lg border-0">
+            <div class="text-center mb-4">
+                <div class="bg-secondary bg-opacity-10 d-inline-block p-4 rounded-circle mb-3 floating">
+                    <span class="fs-1">🌟</span>
+                </div>
+                <h2 class="fw-bold">Join the Adventure</h2>
+                <p class="text-muted">Start boosting your child's concentration today!</p>
+            </div>
+
             <form method="POST">
-                <div class="mb-3">
-                    <label class="form-label">Full Name</label>
-                    <input type="text" name="name" class="form-control" required>
+                <div class="row mb-3">
+                    <div class="col">
+                        <label class="form-label fw-semibold">Full Name</label>
+                        <input type="text" name="name" class="form-control rounded-3 p-3" placeholder="Jane Doe"
+                            required>
+                    </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Email address</label>
-                    <input type="email" name="email" class="form-control" required>
+                    <label class="form-label fw-semibold">Email</label>
+                    <input type="email" name="email" class="form-control rounded-3 p-3" placeholder="parent@example.com"
+                        required>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Phone Number</label>
-                    <input type="text" name="phone" class="form-control">
+                    <label class="form-label fw-semibold">Phone (Optional)</label>
+                    <input type="text" name="phone" class="form-control rounded-3 p-3" placeholder="+1 234 ...">
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Password</label>
-                    <input type="password" name="password" class="form-control" required>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Password</label>
+                    <input type="password" name="password" class="form-control rounded-3 p-3" placeholder="••••••••"
+                        required>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Register</button>
+                <button type="submit" class="btn btn-primary w-100 py-3 rounded-3 shadow">
+                    <span class="fs-5">Start Free Journey ✨</span>
+                </button>
             </form>
-            <p class="text-center mt-3">
-                Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a>
-            </p>
+
+            <div class="text-center mt-4">
+                <p class="text-muted">Already a member? <a href="{{ url_for('auth.login') }}"
+                        class="text-primary fw-bold text-decoration-none">Log in here</a></p>
+            </div>
         </div>
     </div>
 </div>

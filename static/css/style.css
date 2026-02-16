@@ -1,0 +1,113 @@
+/* BrainCoach AI - Premium Design System */
+:root {
+    --primary: #3b82f6; /* Trusting Blue */
+    --secondary: #10b981; /* Growth Green */
+    --accent: #f59e0b; /* Achievement Gold */
+    --background: #f8fafc;
+    --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    --border-radius-lg: 24px;
+    --border-radius-md: 16px;
+}
+
+body {
+    background-color: var(--background);
+    color: #1e293b;
+    font-family: 'Outfit', sans-serif;
+    overflow-x: hidden;
+}
+
+/* Premium Navbar */
+.navbar {
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
+}
+
+/* Rounded Buttons */
+.btn {
+    border-radius: 12px;
+    padding: 0.6rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    border: none;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
+    background-color: #2563eb;
+}
+
+/* Child-Friendly Cards */
+.card {
+    border: none;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Glowing Elements */
+.glow-success {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+    border: 2px solid var(--secondary) !important;
+}
+
+.glow-danger {
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+    border: 2px solid #ef4444 !important;
+}
+
+/* Animations */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+.floating {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Progress Rings */
+.progress-ring {
+    transform: rotate(-90deg);
+}
+
+.progress-ring__circle {
+    transition: stroke-dashoffset 0.35s;
+    transform-origin: 50% 50%;
+}
+
+/* Badge Styling */
+.badge-item {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background: white;
+    box-shadow: var(--card-shadow);
+    margin: 5px;
+}
+
+.badge-locked {
+    filter: grayscale(1);
+    opacity: 0.5;
+}

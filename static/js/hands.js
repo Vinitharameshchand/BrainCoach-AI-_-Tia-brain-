@@ -3,8 +3,10 @@ import { ScoringSystem } from './scoring.js';
 const videoElement = document.getElementById('webcam');
 const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
-const accuracyDisplay = document.getElementById('accuracy-display');
-const feedbackToast = document.getElementById('feedback');
+const accuracyVal = document.getElementById('acc-val');
+const accRing = document.getElementById('acc-ring');
+const accCircle = document.querySelector('.progress-ring__circle');
+const feedbackEmoji = document.getElementById('feedback-emoji');
 const startBtn = document.getElementById('start-btn');
 const stopBtn = document.getElementById('stop-btn');
 const timerDisplay = document.getElementById('timer');
@@ -18,9 +20,24 @@ let isRunning = false;
 let frameCount = 0;
 let startTime;
 
+// Accuracy Circle Settings
+const radius = accCircle.r.baseVal.value;
+const circumference = radius * 2 * Math.PI;
+accCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+
+function setProgress(percent) {
+    const offset = circumference - (percent / 100 * circumference);
+    accCircle.style.strokeDashoffset = offset;
+}
+
 // Audio feedback
 const perfectSound = new Howl({
     src: ['https://actions.google.com/sounds/v1/cartoon/clime_up_the_ladder.ogg']
+});
+
+const failureSound = new Howl({
+    src: ['https://actions.google.com/sounds/v1/cartoon/spring_boing.ogg'],
+    volume: 0.2
 });
 
 function onResults(results) {
@@ -28,20 +45,18 @@ function onResults(results) {
 
     canvasCtx.save();
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-    canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
 
+    // Smooth drawing
     if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
         for (const landmarks of results.multiHandLandmarks) {
-            drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, { color: '#00FF00', lineWidth: 5 });
-            drawLandmarks(canvasCtx, landmarks, { color: '#FF0000', lineWidth: 2 });
+            drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, { color: '#3b82f6', lineWidth: 4 });
+            drawLandmarks(canvasCtx, landmarks, { color: '#10b981', lineWidth: 1, radius: 2 });
 
-            // Scoring
             const accuracy = scorer.calculateAccuracy(landmarks);
             frameCount++;
             updateUI(accuracy);
 
-            // Send periodic updates to backend
-            if (frameCount % 30 === 0) {
+            if (frameCount % 60 === 0) {
                 updateBackend(accuracy, landmarks, frameCount);
             }
         }
@@ -50,33 +65,49 @@ function onResults(results) {
 }
 
 function updateUI(accuracy) {
-    accuracyDisplay.innerText = `Acc: ${accuracy.toFixed(1)}%`;
+    accuracyVal.innerText = `${Math.round(accuracy)}%`;
+    setProgress(accuracy);
 
     if (accuracy >= threshold) {
-        accuracyDisplay.className = "accuracy-indicator text-success";
-        feedbackToast.style.display = 'block';
-        feedbackToast.innerText = "Perfect!";
-        feedbackToast.style.color = "#22c55e";
-        if (frameCount % 60 === 0) perfectSound.play();
+        accRing.className = "accuracy-ring-container glow-success";
+        accCircle.style.stroke = "#10b981";
+
+        if (accuracy > 90 && frameCount % 120 === 0) {
+            showEmoji('🌟');
+            perfectSound.play();
+        }
     } else {
-        accuracyDisplay.className = "accuracy-indicator text-danger";
-        feedbackToast.style.display = 'block';
-        feedbackToast.innerText = "Faster fingers!";
-        feedbackToast.style.color = "#ef4444";
+        accRing.className = "accuracy-ring-container glow-danger";
+        accCircle.style.stroke = "#ef4444";
+
+        if (frameCount % 180 === 0) {
+            showEmoji('☝️');
+            failureSound.play();
+        }
     }
 }
 
+function showEmoji(emoji) {
+    feedbackEmoji.innerText = emoji;
+    feedbackEmoji.classList.add('show');
+    setTimeout(() => feedbackEmoji.classList.remove('show'), 1000);
+}
+
 async function updateBackend(accuracy, landmarks, frameNum) {
-    await fetch('/api/session/update', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            session_id: sessionId,
-            accuracy: accuracy,
-            landmarks: landmarks,
-            frame_number: frameNum
-        })
-    });
+    try {
+        await fetch('/api/session/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                session_id: sessionId,
+                accuracy: accuracy,
+                landmarks: landmarks,
+                frame_number: frameNum
+            })
+        });
+    } catch (e) {
+        console.error("Backend update failed", e);
+    }
 }
 
 const hands = new Hands({
@@ -84,10 +115,10 @@ const hands = new Hands({
 });
 
 hands.setOptions({
-    maxNumHands: 2,
+    maxNumHands: 1,
     modelComplexity: 1,
-    minDetectionConfidence: 0.5,
-    minTrackingConfidence: 0.5
+    minDetectionConfidence: 0.7,
+    minTrackingConfidence: 0.7
 });
 
 hands.onResults(onResults);
@@ -106,9 +137,7 @@ startBtn.onclick = () => {
     isRunning = true;
     startBtn.style.display = 'none';
     stopBtn.style.display = 'inline-block';
-    startTime = Date.now();
 
-    // Start Timer
     let timeLeft = duration;
     const interval = setInterval(() => {
         if (!isRunning) {
@@ -152,8 +181,9 @@ async function finishSession() {
 
 camera.start();
 
-// Initialize Split.js
 Split(['#left-view', '#right-view'], {
     sizes: [50, 50],
-    minSize: 200
+    minSize: 200,
+    gutterSize: 10,
+    snapOffset: 0
 });
