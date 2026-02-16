@@ -40,7 +40,7 @@ def register():
         new_parent = Parent(
             email=email, 
             name=name, 
-            password_hash=generate_password_hash(password, method='sha256'),
+            password_hash=generate_password_hash(password),
             phone=phone
         )
 
