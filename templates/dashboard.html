@@ -9,17 +9,14 @@
         border-radius: 20px;
         border: 1px solid #e2e8f0;
     }
-
     .child-card {
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         border: 2px solid transparent;
     }
-
     .child-card:hover {
         border-color: var(--primary);
         transform: scale(1.02);
     }
-
     .level-badge {
         background: #fef3c7;
         color: #d97706;
@@ -38,15 +35,13 @@
         <p class="text-muted fs-5">Let's see how much our little heroes have improved today!</p>
     </div>
     <div class="col-md-4 text-md-end">
-        <button class="btn btn-primary btn-lg rounded-pill px-4 shadow" data-bs-toggle="modal"
-            data-bs-target="#addChildModal">
+        <button class="btn btn-primary btn-lg rounded-pill px-4 shadow" data-bs-toggle="modal" data-bs-target="#addChildModal">
             <span class="me-2">+</span> Add a Child
         </button>
     </div>
 </div>
 
 <div class="row">
-    <!-- Children Grid -->
     <div class="col-lg-4">
         <h4 class="fw-bold mb-4">Our Explorers</h4>
         {% if children %}
@@ -64,25 +59,12 @@
                         </div>
                     </div>
                     <div class="dropdown">
-                        <button class="btn btn-light rounded-circle p-2" type="button" data-bs-toggle="dropdown">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <circle cx="12" cy="12" r="1" />
-                                <circle cx="12" cy="5" r="1" />
-                                <circle cx="12" cy="19" r="1" />
-                            </svg>
-                        </button>
+                        <button class="btn btn-light rounded-circle p-2" type="button" data-bs-toggle="dropdown">⋮</button>
                         <ul class="dropdown-menu dropdown-menu-end rounded-3 shadow border-0">
-                            <li><a class="dropdown-item py-2"
-                                    href="{{ url_for('session.start_training', child_id=child.id, exercise_id=1) }}">🎯
-                                    Start Training</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ url_for('session.start_training', child_id=child.id, exercise_id=1) }}">🎯 Start Training</a></li>
                             <li><a class="dropdown-item py-2" href="#">📊 View Report</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item py-2 text-danger"
-                                    href="{{ url_for('dashboard.delete_child', child_id=child.id) }}">🗑️ Remove</a>
-                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item py-2 text-danger" href="{{ url_for('dashboard.delete_child', child_id=child.id) }}">🗑️ Remove</a></li>
                         </ul>
                     </div>
                 </div>
@@ -90,14 +72,13 @@
         </div>
         {% endfor %}
         {% else %}
-        <div class="card p-5 text-center bg-light border-dashed">
+        <div class="card p-5 text-center bg-light">
             <div class="mb-3 fs-1 text-muted">🎨</div>
             <h5>Ready to start?</h5>
             <p class="text-muted">Add your first child profile to begin the adventure!</p>
         </div>
         {% endif %}
 
-        <!-- Unlockable Badges -->
         <div class="mt-5 p-4 bg-white rounded-4 shadow-sm">
             <h5 class="fw-bold mb-3">Trophy Case 🏆</h5>
             <div class="d-flex flex-wrap justify-content-center">
@@ -109,26 +90,25 @@
         </div>
     </div>
 
-    <!-- Analytics Dashboard -->
     <div class="col-lg-8">
         <div class="row g-4 mb-4">
             <div class="col-md-6">
                 <div class="card p-4 border-start border-primary border-5 h-100">
                     <h6 class="text-muted text-uppercase fw-bold mb-3">Focus Score</h6>
                     <div class="d-flex align-items-end">
-                        <h2 class="fw-bold mb-0">86%</h2>
-                        <span class="ms-2 text-success fw-bold small">↑ 12% boost</span>
+                        <h2 class="fw-bold mb-0">{{ avg_accuracy }}%</h2>
+                        <span class="ms-2 text-success fw-bold small">↑ Live Data</span>
                     </div>
                     <div class="progress mt-3" style="height: 10px;">
-                        <div class="progress-bar bg-primary rounded-pill" style="width: 86%"></div>
+                        <div class="progress-bar bg-primary rounded-pill" style="width: {{ avg_accuracy }}%"></div>
                     </div>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="card p-4 border-start border-secondary border-5 h-100">
                     <h6 class="text-muted text-uppercase fw-bold mb-3">Sessions Completed</h6>
-                    <h2 class="fw-bold mb-0">{{ recent_sessions|length }}</h2>
-                    <p class="text-muted small mb-0 mt-2">Awesome! That's 4 more than last week.</p>
+                    <h2 class="fw-bold mb-0">{{ total_sessions }}</h2>
+                    <p class="text-muted small mb-0 mt-2">Awesome! Keep going explorer!</p>
                 </div>
             </div>
         </div>
@@ -163,14 +143,12 @@
                                 <div class="d-flex align-items-center">
                                     <span class="fw-bold text-primary me-2">{{ session.avg_accuracy|round(1) }}%</span>
                                     <div class="progress flex-grow-1" style="height: 6px; max-width: 60px;">
-                                        <div class="progress-bar bg-primary" style="width: {{ session.avg_accuracy }}%">
-                                        </div>
+                                        <div class="progress-bar bg-primary" style="width: {{ session.avg_accuracy }}%"></div>
                                     </div>
                                 </div>
                             </td>
                             <td class="pe-4 text-center">
-                                <span
-                                    class="badge rounded-pill bg-success bg-opacity-10 text-success px-3 py-2">Success!</span>
+                                <span class="badge rounded-pill bg-success bg-opacity-10 text-success px-3 py-2">Success!</span>
                             </td>
                         </tr>
                         {% endfor %}
@@ -181,7 +159,6 @@
     </div>
 </div>
 
-<!-- Add Child Modal -->
 <div class="modal fade" id="addChildModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 rounded-4">
@@ -193,19 +170,16 @@
                 <div class="modal-body p-4 pt-0">
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Nickname</label>
-                        <input type="text" name="name" class="form-control rounded-3 p-3"
-                            placeholder="e.g. Little Ninja" required>
+                        <input type="text" name="name" class="form-control rounded-3 p-3" placeholder="e.g. Little Ninja" required>
                     </div>
                     <div class="row mb-3">
                         <div class="col">
                             <label class="form-label fw-semibold">Age</label>
-                            <input type="number" name="age" class="form-control rounded-3 p-3" placeholder="Years"
-                                required>
+                            <input type="number" name="age" class="form-control rounded-3 p-3" placeholder="Years" required>
                         </div>
                         <div class="col">
                             <label class="form-label fw-semibold">Grade</label>
-                            <input type="text" name="grade" class="form-control rounded-3 p-3"
-                                placeholder="Kindergarten">
+                            <input type="text" name="grade" class="form-control rounded-3 p-3" placeholder="Kindergarten">
                         </div>
                     </div>
                 </div>
@@ -222,18 +196,19 @@
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const ctx = document.getElementById('progressChart').getContext('2d');
-    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    var chartData = {{ chart_data | tojson }};
+    var ctx = document.getElementById('progressChart').getContext('2d');
+    var gradient = ctx.createLinearGradient(0, 0, 0, 400);
     gradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)');
     gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
 
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            labels: ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7'],
             datasets: [{
                 label: 'Focus Accuracy',
-                data: [72, 75, 70, 84, 82, 88, 86],
+                data: chartData,
                 borderColor: '#3b82f6',
                 borderWidth: 4,
                 tension: 0.4,
@@ -257,7 +232,7 @@
                     beginAtZero: true,
                     max: 100,
                     grid: { color: '#f1f5f9' },
-                    ticks: { callback: value => value + '%' }
+                    ticks: { callback: function(value) { return value + '%'; } }
                 },
                 x: { grid: { display: false } }
             }
