@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Session History - BrainCoach AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+        }
+
+        .navbar-custom {
+            background: white;
+            border-radius: 50px;
+            padding: 10px 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .page-title {
+            color: var(--primary);
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .sessions-list {
+            margin-top: 30px;
+        }
+
+        .session-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .session-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+            border-color: var(--primary);
+        }
+
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .session-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .session-date {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .session-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-box {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .grade-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .grade-A {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .grade-B {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .grade-C {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .grade-D, .grade-F {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+
+        .empty-state i {
+            font-size: 80px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .btn-back {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-back:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .progress-bar-custom {
+            height: 10px;
+            border-radius: 50px;
+            background: #e5e7eb;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.5s ease;
+        }
+
+        .duration-badge {
+            background: #f3f4f6;
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .icon-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar-custom">
+            <div>
+                <span style="font-size: 24px;">🧠</span>
+                <strong style="color: var(--primary); font-size: 18px;">BrainCoach AI</strong>
+            </div>
+            <div>
+                <a href="{{ url_for('student.dashboard') }}" class="btn-back">
+                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </nav>
+
+        <div class="content-section">
+            <h1 class="page-title">
+                <i class="bi bi-clock-history"></i>
+                My Session History
+            </h1>
+            <p style="color: #6b7280; font-size: 16px;">Track your progress and see how you're improving!</p>
+
+            <div class="sessions-list">
+                {% if sessions %}
+                    {% for session in sessions %}
+                        <div class="session-card">
+                            <div class="session-header">
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <div class="icon-circle">
+                                        <i class="bi bi-award-fill"></i>
+                                    </div>
+                                    <div>
+                                        <div class="session-title">
+                                            {{ session.exercise.title if session.exercise else 'Exercise Session' }}
+                                        </div>
+                                        <div class="session-date">
+                                            <i class="bi bi-calendar3"></i>
+                                            {{ session.start_time.strftime('%B %d, %Y') if session.start_time else 'Date unavailable' }}
+                                            <span class="duration-badge ms-2">
+                                                <i class="bi bi-clock"></i>
+                                                {% if session.end_time and session.start_time %}
+                                                    {{ ((session.end_time - session.start_time).seconds // 60) }} min
+                                                {% else %}
+                                                    Duration N/A
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if session.performance_grade %}
+                                    <span class="grade-badge grade-{{ session.performance_grade }}">
+                                        Grade {{ session.performance_grade }}
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            <div class="session-stats">
+                                {% if session.avg_accuracy %}
+                                <div class="stat-box">
+                                    <div class="stat-label">Accuracy</div>
+                                    <div class="stat-value">{{ session.avg_accuracy|round(1) }}%</div>
+                                    <div class="progress-bar-custom">
+                                        <div class="progress-fill" style="width: {{ session.avg_accuracy }}%"></div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                {% if session.consistency_score %}
+                                <div class="stat-box">
+                                    <div class="stat-label">Consistency</div>
+                                    <div class="stat-value">{{ (session.consistency_score * 100)|round(1) }}%</div>
+                                    <div class="progress-bar-custom">
+                                        <div class="progress-fill" style="width: {{ (session.consistency_score * 100) }}%"></div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                {% if session.composite_score %}
+                                <div class="stat-box">
+                                    <div class="stat-label">Overall Score</div>
+                                    <div class="stat-value">{{ session.composite_score|round(1) }}</div>
+                                </div>
+                                {% endif %}
+
+                                {% if session.total_score %}
+                                <div class="stat-box">
+                                    <div class="stat-label">Total Points</div>
+                                    <div class="stat-value">{{ session.total_score }}</div>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            {% if session.pattern_detected %}
+                            <div class="alert alert-info mt-3 mb-0" role="alert" style="border-radius: 10px;">
+                                <i class="bi bi-lightbulb-fill"></i>
+                                <strong>Pattern Detected:</strong> Our AI noticed some patterns in your performance. Keep practicing to improve!
+                            </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="bi bi-inbox"></i>
+                        <h3>No Sessions Yet</h3>
+                        <p>Start your first exercise to see your progress here!</p>
+                        <a href="{{ url_for('student.dashboard') }}" class="btn btn-primary btn-lg mt-3" style="border-radius: 50px;">
+                            <i class="bi bi-play-fill"></i> Start First Exercise
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

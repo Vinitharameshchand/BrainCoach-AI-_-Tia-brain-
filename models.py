@@ -21,7 +21,21 @@ class Child(db.Model):
     age = db.Column(db.Integer)
     grade = db.Column(db.String(20))
     enrolled_date = db.Column(db.DateTime, default=datetime.utcnow)
+    access_code = db.Column(db.String(6), unique=True, index=True)
+    is_active = db.Column(db.Boolean, default=True)
+    last_access = db.Column(db.DateTime)
     sessions = db.relationship('Session', backref='child', lazy=True)
+
+    def generate_access_code(self):
+        """Generate unique 6-digit access code"""
+        import random
+        import string
+        while True:
+            code = ''.join(random.choices(string.digits, k=6))
+            existing = Child.query.filter_by(access_code=code).first()
+            if not existing:
+                self.access_code = code
+                return code
 
 class Module(db.Model):
     id = db.Column(db.Integer, primary_key=True)
