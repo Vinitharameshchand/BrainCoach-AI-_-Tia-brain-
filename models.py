@@ -16,7 +16,7 @@ class Parent(UserMixin, db.Model):
 
 class Child(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'), nullable=False)
+    parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'), nullable=False, index=True)
     name = db.Column(db.String(100), nullable=False)
     age = db.Column(db.Integer)
     grade = db.Column(db.String(20))
@@ -41,8 +41,8 @@ class Exercise(db.Model):
 
 class Session(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    child_id = db.Column(db.Integer, db.ForeignKey('child.id'), nullable=False)
-    exercise_id = db.Column(db.Integer, db.ForeignKey('exercise.id'), nullable=False)
+    child_id = db.Column(db.Integer, db.ForeignKey('child.id'), nullable=False, index=True)
+    exercise_id = db.Column(db.Integer, db.ForeignKey('exercise.id'), nullable=False, index=True)
     start_time = db.Column(db.DateTime, default=datetime.utcnow)
     end_time = db.Column(db.DateTime)
     avg_accuracy = db.Column(db.Float)
@@ -54,7 +54,7 @@ class Session(db.Model):
 
 class HandTrackingFrame(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    session_id = db.Column(db.Integer, db.ForeignKey('session.id'), nullable=False)
+    session_id = db.Column(db.Integer, db.ForeignKey('session.id'), nullable=False, index=True)
     frame_number = db.Column(db.Integer)
     landmark_data = db.Column(db.Text) # Stored as JSON string
     frame_accuracy = db.Column(db.Float)

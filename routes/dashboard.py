@@ -21,18 +21,29 @@ def index():
         recent_sessions = Session.query.filter(Session.child_id.in_(child_ids)).order_by(Session.start_time.desc()).limit(5).all()
         
         # Calculate real focus score
-        all_sessions = Session.query.filter(Session.child_id.in_(child_ids), Session.avg_accuracy != None).all()
+        all_sessions = Session.query.filter(
+            Session.child_id.in_(child_ids), 
+            Session.avg_accuracy != None,
+            Session.result_status == 'Completed'
+        ).order_by(Session.start_time.desc()).all()
+        
         if all_sessions:
             avg_accuracy = sum(s.avg_accuracy for s in all_sessions) / len(all_sessions)
             total_sessions = len(all_sessions)
             
-            # Simple dummy data for the chart if real data is sparse
-            # In a real app, you'd group by day of week
-            if len(all_sessions) >= 7:
-                accuracy_over_time = [s.avg_accuracy for s in all_sessions[-7:]]
-            else:
-                # Pad with some values or just actuals
-                accuracy_over_time = [s.avg_accuracy for s in all_sessions] + [0] * (7 - len(all_sessions))
+            # Get last 7 sessions for chart
+            last_7 = all_sessions[:7]
+            last_7.reverse()  # Reverse to show oldest to newest
+            
+            # Ensure all values are valid numbers (not None)
+            accuracy_over_time = [round(s.avg_accuracy, 1) if s.avg_accuracy else 0 for s in last_7]
+            
+            # Pad with zeros if less than 7 sessions
+            while len(accuracy_over_time) < 7:
+                accuracy_over_time.insert(0, 0)
+        else:
+            # No completed sessions yet - show empty chart
+            accuracy_over_time = [0, 0, 0, 0, 0, 0, 0]
 
     return render_template('dashboard.html', 
                            children=children, 
@@ -44,20 +55,42 @@ def index():
 @dashboard.route('/child/add', methods=['POST'])
 @login_required
 def add_child():
-    name = request.form.get('name')
-    age = request.form.get('age')
-    grade = request.form.get('grade')
+    name = request.form.get('name', '').strip()
+    age = request.form.get('age', '').strip()
+    grade = request.form.get('grade', '').strip()
+    
+    # Validation
+    if not name or len(name) < 2:
+        flash('Child name must be at least 2 characters long.')
+        return redirect(url_for('dashboard.index'))
+    
+    if len(name) > 100:
+        flash('Child name is too long (max 100 characters).')
+        return redirect(url_for('dashboard.index'))
+    
+    try:
+        age_int = int(age) if age else None
+        if age_int and (age_int < 3 or age_int > 18):
+            flash('Age must be between 3 and 18.')
+            return redirect(url_for('dashboard.index'))
+    except ValueError:
+        flash('Invalid age value.')
+        return redirect(url_for('dashboard.index'))
+    
+    if grade and len(grade) > 20:
+        flash('Grade is too long (max 20 characters).')
+        return redirect(url_for('dashboard.index'))
     
     new_child = Child(
         name=name,
-        age=age,
-        grade=grade,
+        age=age_int,
+        grade=grade if grade else None,
         parent_id=current_user.id
     )
     db.session.add(new_child)
     db.session.commit()
     
-    flash('Child added successfully!')
+    flash(f'{name} has been added successfully! 🎉')
     return redirect(url_for('dashboard.index'))
 
 @dashboard.route('/child/delete/<int:child_id>')
