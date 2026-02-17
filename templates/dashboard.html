@@ -162,7 +162,7 @@
             <h6 class="text-muted text-uppercase fw-bold mb-2 small">Average Score</h6>
             <div class="d-flex align-items-center justify-content-between">
                 <div>
-                    <h2 class="fw-bold mb-1">{{ avg_accuracy|round(1) }}%</h2>
+                    <h2 class="fw-bold mb-1">{{ avg_accuracy|round(1) if avg_accuracy else 0 }}%</h2>
                     <span class="badge bg-success bg-opacity-10 text-success">Live Data</span>
                 </div>
                 <div class="metric-icon">📊</div>
@@ -327,9 +327,9 @@
                             <td class="text-muted">{{ session.start_time.strftime('%b %d, %Y') }}</td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <span class="fw-bold text-primary me-2">{{ session.avg_accuracy|round(1) }}%</span>
+                                    <span class="fw-bold text-primary me-2">{{ session.avg_accuracy|round(1) if session.avg_accuracy else 0 }}%</span>
                                     <div class="progress flex-grow-1" style="height: 6px; max-width: 60px;">
-                                        <div class="progress-bar bg-primary" style="width: {{ session.avg_accuracy }}%">
+                                        <div class="progress-bar bg-primary" style="width: {{ session.avg_accuracy if session.avg_accuracy else 0 }}%">
                                         </div>
                                     </div>
                                 </div>
@@ -342,7 +342,7 @@
                                 {% endif %}
                             </td>
                             <td>
-                                {% if session.consistency_score %}
+                                {% if session.consistency_score is not none %}
                                 <span class="small">{{ session.consistency_score|round(1) }}%</span>
                                 {% else %}
                                 <span class="small text-muted">--</span>

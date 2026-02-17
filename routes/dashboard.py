@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-from models import db, Child, Session, Exercise
+from models import db, Child, Session, Exercise, Module
 from datetime import datetime
 
 dashboard = Blueprint('dashboard', __name__)
@@ -45,10 +45,10 @@ def index():
             # No completed sessions yet - show empty chart
             accuracy_over_time = [0, 0, 0, 0, 0, 0, 0]
 
-    return render_template('dashboard.html', 
-                           children=children, 
+    return render_template('dashboard.html',
+                           children=children,
                            recent_sessions=recent_sessions,
-                           avg_accuracy=round(avg_accuracy, 1),
+                           avg_accuracy=round(avg_accuracy, 1) if avg_accuracy else 0,
                            total_sessions=total_sessions,
                            chart_data=accuracy_over_time)
 
@@ -109,8 +109,6 @@ def delete_child(child_id):
 @dashboard.route('/child/<int:child_id>/select-exercise')
 @login_required
 def select_exercise(child_id):
-    from models import Module, Exercise
-
     child = Child.query.get_or_404(child_id)
     if child.parent_id != current_user.id:
         flash('Unauthorized action.')
