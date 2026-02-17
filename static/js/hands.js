@@ -273,32 +273,64 @@ async function finishSession() {
 }
 
 function showSessionResults(summary, analysis) {
-    // Create a results display (simple version)
-    const resultsHTML = `
-        <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-                    background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-                    z-index: 10000; max-width: 500px; text-align: center;">
-            <h2 style="color: #10b981; margin-bottom: 20px;">🎉 Session Complete!</h2>
-            <div style="font-size: 3em; font-weight: bold; color: #1e293b; margin: 20px 0;">
-                ${summary.grade}
-            </div>
-            <div style="font-size: 1.2em; color: #64748b; margin-bottom: 15px;">
-                Score: ${summary.totalScore}
-            </div>
-            <div style="text-align: left; padding: 15px; background: #f1f5f9; border-radius: 10px; margin-top: 20px;">
-                <p><strong>Average Accuracy:</strong> ${summary.averageAccuracy.toFixed(1)}%</p>
-                <p><strong>Consistency:</strong> ${summary.consistency.score.toFixed(1)}%</p>
-                <p><strong>Performance:</strong> ${summary.performance.trend}</p>
-            </div>
-            <p style="margin-top: 20px; color: #64748b; font-size: 0.9em;">
-                Redirecting to dashboard...
-            </p>
-        </div>
-        <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                    background: rgba(0,0,0,0.5); z-index: 9999;"></div>
-    `;
+    // Update modal with results
+    const gradeDisplay = document.getElementById('grade-display');
+    const totalScoreEl = document.getElementById('final-total-score');
+    const accuracyEl = document.getElementById('final-accuracy');
+    const consistencyEl = document.getElementById('final-consistency');
+    const trendEl = document.getElementById('final-trend');
 
-    document.body.insertAdjacentHTML('beforeend', resultsHTML);
+    if (gradeDisplay) {
+        gradeDisplay.textContent = summary.grade;
+        gradeDisplay.className = `grade-badge grade-${summary.grade} d-inline-block mb-2`;
+    }
+
+    if (totalScoreEl) totalScoreEl.textContent = summary.totalScore;
+    if (accuracyEl) accuracyEl.textContent = summary.averageAccuracy.toFixed(1) + '%';
+    if (consistencyEl) consistencyEl.textContent = summary.consistency.score.toFixed(1) + '%';
+    if (trendEl) trendEl.textContent = summary.performance.trend;
+
+    // Show pattern alert if detected
+    if (summary.patterns && summary.patterns.detected) {
+        const patternAlert = document.getElementById('pattern-alert-modal');
+        const patternMessage = document.getElementById('pattern-message');
+        if (patternAlert) {
+            patternAlert.classList.remove('d-none');
+            if (patternMessage) {
+                patternMessage.textContent = `Detected ${summary.patterns.count} problematic hand positions. Focus on improving these specific movements.`;
+            }
+        }
+    }
+
+    // Display recommendations
+    if (analysis && analysis.recommendations) {
+        const recList = document.getElementById('recommendations-list');
+        if (recList && analysis.recommendations.length > 0) {
+            recList.innerHTML = analysis.recommendations.slice(0, 3).map(rec => `
+                <div class="alert alert-${rec.priority === 'High' ? 'danger' : rec.priority === 'Medium' ? 'warning' : 'info'} mb-2">
+                    <strong>${rec.category}:</strong> ${rec.message}
+                    <br><small class="text-muted">Action: ${rec.action}</small>
+                </div>
+            `).join('');
+        } else if (recList) {
+            recList.innerHTML = '<p class="text-success small">Great job! Keep up the excellent work! 🌟</p>';
+        }
+    }
+
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('resultsModal'));
+    modal.show();
+
+    // Countdown redirect
+    let countdown = 5;
+    const countdownEl = document.getElementById('redirect-countdown');
+    const countdownInterval = setInterval(() => {
+        countdown--;
+        if (countdownEl) countdownEl.textContent = countdown;
+        if (countdown <= 0) {
+            clearInterval(countdownInterval);
+        }
+    }, 1000);
 }
 
 // Initialize Split.js for resizable panels
