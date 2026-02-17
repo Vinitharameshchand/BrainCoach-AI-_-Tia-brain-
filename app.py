@@ -31,6 +31,9 @@ def create_app():
     from routes.session import session as session_blueprint
     app.register_blueprint(session_blueprint)
 
+    from routes.analytics import analytics as analytics_blueprint
+    app.register_blueprint(analytics_blueprint, url_prefix='/analytics')
+
     # Create database tables
     with app.app_context():
         db.create_all()

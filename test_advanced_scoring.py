@@ -242,8 +242,11 @@ def test_complete_workflow():
     child_age = 10
     scorer = AdvancedScoringSystem(child_age=child_age)
 
-    # Simulate 100 frames of hand tracking
-    print("Processing 100 frames...")
+    # Simulate 100 frames of hand tracking with improving accuracy
+    print("Processing 100 frames with improving performance...")
+
+    accuracies = []
+    all_landmark_errors = []
 
     for frame in range(100):
         # Simulate improving accuracy with some noise
@@ -251,26 +254,43 @@ def test_complete_workflow():
         noise = np.random.normal(0, 5)
         accuracy = max(0, min(100, base_accuracy + noise))
 
-        scorer.calculate_moving_average(accuracy)
+        # Apply EMA smoothing
+        smoothed = scorer.calculate_moving_average(accuracy)
+        accuracies.append(smoothed)
 
         # Simulate landmark errors
         landmark_errors = np.random.normal(0.15, 0.05, 21).tolist()
-        if frame % 30 == 0:  # Periodically check patterns
-            scorer.detect_error_patterns(landmark_errors)
+        all_landmark_errors.extend(landmark_errors)
 
-    # Get session summary
-    summary = scorer.getSessionSummary() if hasattr(scorer, 'getSessionSummary') else {
-        'totalScore': scorer.getTotalScore(),
-        'averageAccuracy': scorer.getAverageAccuracy(),
-        'consistency': scorer.calculate_consistency_score(scorer.accuracyHistory if hasattr(scorer, 'accuracyHistory') else [])
+    # Analyze the session data
+    avg_accuracy = np.mean(accuracies)
+    consistency = scorer.calculate_consistency_score(accuracies)
+
+    # Pattern detection on all errors
+    patterns = scorer.detect_error_patterns(all_landmark_errors)
+
+    # Calculate composite score
+    metrics = {
+        'average_accuracy': avg_accuracy,
+        'consistency_score': consistency,
+        'improvement_percentage': 15,  # Simulated improvement
+        'pattern_detection': patterns
     }
+    composite_result = scorer.calculate_composite_score(metrics)
 
     print("\nSession Summary:")
-    print(f"  Total Frames: {scorer.totalFrames}")
-    print(f"  Average Accuracy: {scorer.getAverageAccuracy():.2f}%")
-    print(f"  Total Score: {scorer.getTotalScore()}")
+    print(f"  Total Frames Processed: 100")
+    print(f"  Average Accuracy: {avg_accuracy:.2f}%")
+    print(f"  Consistency Score: {consistency:.2f}%")
+    print(f"  Composite Score: {composite_result['composite_score']:.2f}")
+    print(f"  Grade: {composite_result['grade']}")
     print(f"  Dynamic Threshold: {scorer.dynamic_threshold:.2f}%")
-    print(f"  Matched Frames: {scorer.matchedFrames}/{scorer.totalFrames}")
+    print(f"  Pattern Detection: {'Yes' if patterns['patterns_detected'] else 'No'}")
+
+    if patterns['patterns_detected']:
+        print(f"  Problematic Landmarks: {len(patterns['problematic_landmarks'])}")
+
+    print("\n  ✓ Complete workflow successfully demonstrated!")
 
 
 def run_all_tests():
