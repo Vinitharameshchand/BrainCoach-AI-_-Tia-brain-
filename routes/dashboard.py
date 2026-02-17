@@ -100,8 +100,27 @@ def delete_child(child_id):
     if child.parent_id != current_user.id:
         flash('Unauthorized action.')
         return redirect(url_for('dashboard.index'))
-    
+
     db.session.delete(child)
     db.session.commit()
     flash('Child removed.')
     return redirect(url_for('dashboard.index'))
+
+@dashboard.route('/child/<int:child_id>/select-exercise')
+@login_required
+def select_exercise(child_id):
+    from models import Module, Exercise
+
+    child = Child.query.get_or_404(child_id)
+    if child.parent_id != current_user.id:
+        flash('Unauthorized action.')
+        return redirect(url_for('dashboard.index'))
+
+    # Get all modules and exercises
+    modules = Module.query.all()
+    exercises = Exercise.query.all()
+
+    return render_template('exercise_selection.html',
+                          child=child,
+                          modules=modules,
+                          exercises=exercises)

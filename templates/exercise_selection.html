@@ -1,0 +1,358 @@
+{% extends 'base.html' %}
+
+{% block title %}Select Exercise - BrainCoach AI{% endblock %}
+
+{% block extra_css %}
+<style>
+    .exercise-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        border: 3px solid transparent;
+        height: 100%;
+    }
+
+    .exercise-card:hover {
+        border-color: var(--primary);
+        transform: translateY(-8px);
+        box-shadow: 0 15px 40px rgba(59, 130, 246, 0.2);
+    }
+
+    .exercise-card.selected {
+        border-color: var(--primary);
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+    }
+
+    .difficulty-badge {
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+
+    .difficulty-easy {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .difficulty-medium {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .difficulty-hard {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .child-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+    }
+
+    .module-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .video-preview {
+        width: 100%;
+        height: 200px;
+        background: #f1f5f9;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .info-badge {
+        background: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .start-button {
+        font-size: 1.2rem;
+        padding: 15px 40px;
+        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .start-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+    }
+
+    .threshold-indicator {
+        height: 8px;
+        background: #e2e8f0;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .threshold-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #10b981, #3b82f6, #8b5cf6);
+        transition: width 0.5s ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row align-items-center mb-5">
+        <div class="col-md-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}" class="text-decoration-none">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Select Exercise</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold mb-2">Let's Start Training! 🚀</h2>
+            <p class="text-muted fs-5">Choose an exercise for {{ child.name }}</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <div class="child-avatar">
+                🧒
+            </div>
+        </div>
+    </div>
+
+    <!-- Child Info Card -->
+    <div class="card mb-4 border-primary border-2">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="fw-bold mb-2">Training For: {{ child.name }}</h5>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <div class="info-badge">
+                            <span>👤</span>
+                            <span class="fw-semibold">Age: {{ child.age if child.age else 'Not set' }}</span>
+                        </div>
+                        <div class="info-badge">
+                            <span>📚</span>
+                            <span class="fw-semibold">Grade: {{ child.grade if child.grade else 'Not set' }}</span>
+                        </div>
+                        <div class="info-badge">
+                            <span>🎯</span>
+                            <span class="fw-semibold">Level: {{ (child.sessions|length // 5) + 1 }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                    <p class="small text-muted mb-1">Recommended Threshold</p>
+                    <h4 class="fw-bold text-primary mb-2" id="dynamic-threshold">Loading...</h4>
+                    <div class="threshold-indicator">
+                        <div class="threshold-bar" id="threshold-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Module Selection -->
+    <h4 class="fw-bold mb-4">Available Modules</h4>
+    <div class="row g-4 mb-5">
+        {% for module in modules %}
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4 module-card" style="cursor: pointer;" onclick="filterExercises({{ module.id }})">
+                <div class="module-icon">
+                    {% if 'Yoga' in module.name %}🧘
+                    {% elif 'Focus' in module.name %}🎯
+                    {% elif 'Coordination' in module.name %}✋
+                    {% else %}🌟
+                    {% endif %}
+                </div>
+                <h5 class="fw-bold mb-2">{{ module.name }}</h5>
+                <p class="text-muted small mb-0">
+                    {% if module.difficulty == 'Easy' %}Beginner Friendly
+                    {% elif module.difficulty == 'Medium' %}Intermediate
+                    {% else %}Advanced
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Exercise Selection -->
+    <h4 class="fw-bold mb-4">Choose Your Exercise</h4>
+    {% if exercises %}
+    <div class="row g-4 mb-5">
+        {% for exercise in exercises %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card exercise-card" onclick="selectExercise({{ exercise.id }}, '{{ exercise.title }}')" id="exercise-{{ exercise.id }}">
+                <div class="card-body p-4">
+                    <div class="video-preview">
+                        🎥
+                    </div>
+                    <h5 class="fw-bold mb-2">{{ exercise.title }}</h5>
+                    <p class="text-muted small mb-3">{{ exercise.module.name }}</p>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="difficulty-badge difficulty-{{ exercise.module.difficulty|lower if exercise.module.difficulty else 'easy' }}">
+                            {{ exercise.module.difficulty if exercise.module.difficulty else 'Easy' }}
+                        </span>
+                        <span class="text-muted">
+                            <i class="bi bi-clock"></i> {{ exercise.duration_seconds // 60 }} min
+                        </span>
+                    </div>
+
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span>Target: {{ exercise.accuracy_threshold }}%</span>
+                        <span>🎯 Focus Training</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center py-5">
+        <h5>📝 No Exercises Available Yet</h5>
+        <p class="mb-0">Exercises will be added soon. Check back later!</p>
+    </div>
+    {% endif %}
+
+    <!-- Start Button -->
+    <div class="text-center py-4">
+        <button id="start-button" class="btn btn-primary btn-lg start-button rounded-pill" disabled onclick="startTraining()">
+            Select an exercise to continue →
+        </button>
+    </div>
+</div>
+
+<!-- Selected Exercise Info Modal -->
+<div class="modal fade" id="exerciseInfoModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4">
+            <div class="modal-header border-0 p-4">
+                <h4 class="modal-title fw-bold" id="exerciseTitle">Exercise Details</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-4 text-center">
+                    <div class="video-preview" style="height: 150px; font-size: 3rem;">
+                        🎬
+                    </div>
+                </div>
+
+                <h6 class="fw-bold mb-3">What to Expect:</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2">✓ Follow the video demonstration</li>
+                    <li class="mb-2">✓ Match hand movements with the guide</li>
+                    <li class="mb-2">✓ Get real-time feedback on accuracy</li>
+                    <li class="mb-2">✓ Earn rewards for great performance!</li>
+                </ul>
+
+                <div class="alert alert-info mt-4">
+                    <h6 class="fw-bold mb-2">📊 Advanced AI Scoring Active!</h6>
+                    <ul class="small mb-0">
+                        <li>Age-adaptive difficulty threshold</li>
+                        <li>Real-time pattern detection</li>
+                        <li>Personalized recommendations</li>
+                        <li>Performance trend analysis</li>
+                    </ul>
+                </div>
+
+                <div class="d-flex gap-2 mt-4">
+                    <button class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal">
+                        Choose Different
+                    </button>
+                    <button class="btn btn-primary flex-fill" onclick="confirmStart()">
+                        Let's Go! 🚀
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let selectedExerciseId = null;
+    let selectedExerciseTitle = '';
+    const childAge = {{ child.age if child.age else 10 }};
+    const childId = {{ child.id }};
+
+    // Calculate and display dynamic threshold
+    function calculateDynamicThreshold(age) {
+        const beta = 0.4;
+        const lambda = 5.0;
+        const baseThreshold = 85;
+
+        const ageFactor = 1 - beta * Math.exp(-age / lambda);
+        const threshold = baseThreshold * ageFactor;
+
+        return Math.max(60, Math.min(95, threshold));
+    }
+
+    const dynamicThreshold = calculateDynamicThreshold(childAge);
+    document.getElementById('dynamic-threshold').textContent = dynamicThreshold.toFixed(1) + '%';
+    document.getElementById('threshold-bar').style.width = dynamicThreshold + '%';
+
+    function selectExercise(exerciseId, exerciseTitle) {
+        // Remove previous selection
+        document.querySelectorAll('.exercise-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+
+        // Add selection to clicked card
+        document.getElementById('exercise-' + exerciseId).classList.add('selected');
+
+        selectedExerciseId = exerciseId;
+        selectedExerciseTitle = exerciseTitle;
+
+        // Update button
+        const button = document.getElementById('start-button');
+        button.disabled = false;
+        button.textContent = `Start ${exerciseTitle} 🚀`;
+
+        // Show info modal
+        document.getElementById('exerciseTitle').textContent = exerciseTitle;
+        const modal = new bootstrap.Modal(document.getElementById('exerciseInfoModal'));
+        modal.show();
+    }
+
+    function confirmStart() {
+        if (selectedExerciseId) {
+            startTraining();
+        }
+    }
+
+    function startTraining() {
+        if (selectedExerciseId) {
+            window.location.href = `/training/${childId}/${selectedExerciseId}`;
+        } else {
+            alert('Please select an exercise first!');
+        }
+    }
+
+    function filterExercises(moduleId) {
+        // Filter exercises by module (to be implemented)
+        console.log('Filter by module:', moduleId);
+    }
+
+    // Keyboard shortcut
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && selectedExerciseId) {
+            startTraining();
+        }
+    });
+</script>
+{% endblock %}
