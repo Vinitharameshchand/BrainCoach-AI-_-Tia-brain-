@@ -1,4 +1,4 @@
-import { ScoringSystem } from './scoring.js';
+import { AdvancedScoringSystem } from './scoring_advanced.js';
 
 // DOM Elements
 const videoElement = document.getElementById('webcam');
@@ -17,9 +17,10 @@ const errorMessageDiv = document.getElementById('error-message');
 const sessionId = document.getElementById('session_id').value;
 const threshold = parseFloat(document.getElementById('accuracy_threshold').value);
 const duration = parseInt(document.getElementById('duration').value);
+const childAge = parseInt(document.getElementById('child_age').value);
 
-// State
-const scorer = new ScoringSystem(threshold);
+// State - Use Advanced Scoring System
+const scorer = new AdvancedScoringSystem(childAge, threshold);
 let isRunning = false;
 let frameCount = 0;
 let timerInterval = null;
@@ -85,7 +86,8 @@ function onResults(results) {
                 drawLandmarks(canvasCtx, landmarks, { color: '#10b981', lineWidth: 1, radius: 2 });
             }
 
-            const accuracy = scorer.calculateAccuracy(landmarks);
+            const accuracyResult = scorer.calculateAccuracy(landmarks);
+            const accuracy = accuracyResult.smoothed; // Use smoothed accuracy
             frameCount++;
             updateUI(accuracy);
 
@@ -107,7 +109,10 @@ function updateUI(accuracy) {
         setProgress(accuracy);
     }
 
-    if (accuracy >= threshold) {
+    // Use dynamic threshold from advanced scoring
+    const dynamicThreshold = scorer.dynamicThreshold;
+
+    if (accuracy >= dynamicThreshold) {
         accRing.className = "accuracy-ring-container glow-success";
         accCircle.style.stroke = "#10b981";
 
@@ -232,8 +237,9 @@ async function finishSession() {
         clearInterval(timerInterval);
     }
 
-    const finalAccuracy = scorer.getAverageAccuracy();
-    const finalScore = scorer.getTotalScore();
+    // Get comprehensive session summary from advanced scorer
+    const summary = scorer.getSessionSummary();
+    console.log('Session Summary:', summary);
 
     try {
         const response = await fetch('/api/session/complete', {
@@ -241,19 +247,58 @@ async function finishSession() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 session_id: sessionId,
-                avg_accuracy: finalAccuracy,
-                total_score: finalScore
+                avg_accuracy: summary.averageAccuracy,
+                total_score: summary.totalScore
             })
         });
 
         const result = await response.json();
+
+        // Show analysis if available
+        if (result.analysis) {
+            console.log('Advanced Analysis:', result.analysis);
+            showSessionResults(summary, result.analysis);
+        }
+
+        // Redirect after delay
         if (result.redirect) {
-            window.location.href = result.redirect;
+            setTimeout(() => {
+                window.location.href = result.redirect;
+            }, 3000);
         }
     } catch (e) {
         console.error('Session completion failed:', e);
         showError('Failed to save session. Please try again.');
     }
+}
+
+function showSessionResults(summary, analysis) {
+    // Create a results display (simple version)
+    const resultsHTML = `
+        <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                    background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+                    z-index: 10000; max-width: 500px; text-align: center;">
+            <h2 style="color: #10b981; margin-bottom: 20px;">🎉 Session Complete!</h2>
+            <div style="font-size: 3em; font-weight: bold; color: #1e293b; margin: 20px 0;">
+                ${summary.grade}
+            </div>
+            <div style="font-size: 1.2em; color: #64748b; margin-bottom: 15px;">
+                Score: ${summary.totalScore}
+            </div>
+            <div style="text-align: left; padding: 15px; background: #f1f5f9; border-radius: 10px; margin-top: 20px;">
+                <p><strong>Average Accuracy:</strong> ${summary.averageAccuracy.toFixed(1)}%</p>
+                <p><strong>Consistency:</strong> ${summary.consistency.score.toFixed(1)}%</p>
+                <p><strong>Performance:</strong> ${summary.performance.trend}</p>
+            </div>
+            <p style="margin-top: 20px; color: #64748b; font-size: 0.9em;">
+                Redirecting to dashboard...
+            </p>
+        </div>
+        <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: rgba(0,0,0,0.5); z-index: 9999;"></div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', resultsHTML);
 }
 
 // Initialize Split.js for resizable panels

@@ -48,6 +48,15 @@ class Session(db.Model):
     avg_accuracy = db.Column(db.Float)
     total_score = db.Column(db.Integer)
     result_status = db.Column(db.String(20)) # e.g., 'Completed', 'Incomplete'
+
+    # Advanced scoring fields
+    smoothed_accuracy = db.Column(db.Float)
+    consistency_score = db.Column(db.Float)
+    improvement_rate = db.Column(db.Float)
+    composite_score = db.Column(db.Float)
+    performance_grade = db.Column(db.String(2))
+    pattern_detected = db.Column(db.Boolean, default=False)
+
     frames = db.relationship('HandTrackingFrame', backref='session', lazy=True)
     scores = db.relationship('Score', backref='session', lazy=True)
     reports = db.relationship('Report', backref='session', lazy=True)
@@ -66,6 +75,12 @@ class Score(db.Model):
     feedback = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # Advanced scoring fields
+    composite_breakdown = db.Column(db.Text)
+    recommendations = db.Column(db.Text)
+    trend_analysis = db.Column(db.Text)
+    confidence_score = db.Column(db.Float)
+
 class Report(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     session_id = db.Column(db.Integer, db.ForeignKey('session.id'), nullable=False)
@@ -73,3 +88,49 @@ class Report(db.Model):
     pdf_path = db.Column(db.String(255))
     generated_at = db.Column(db.DateTime, default=datetime.utcnow)
     emailed_status = db.Column(db.Boolean, default=False)
+
+class PatternDetection(db.Model):
+    __tablename__ = 'pattern_detection'
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.Integer, db.ForeignKey('session.id'), nullable=False, index=True)
+    landmark_index = db.Column(db.Integer)
+    error_mean = db.Column(db.Float)
+    error_std = db.Column(db.Float)
+    anomaly_count = db.Column(db.Integer)
+    anomaly_percentage = db.Column(db.Float)
+    detected_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class TrendAnalysis(db.Model):
+    __tablename__ = 'trend_analysis'
+    id = db.Column(db.Integer, primary_key=True)
+    child_id = db.Column(db.Integer, db.ForeignKey('child.id'), nullable=False, index=True)
+    analysis_date = db.Column(db.DateTime, default=datetime.utcnow)
+    slope = db.Column(db.Float)
+    intercept = db.Column(db.Float)
+    r_squared = db.Column(db.Float)
+    trend_direction = db.Column(db.String(50))
+    confidence_score = db.Column(db.Float)
+    predicted_next = db.Column(db.Float)
+    sessions_analyzed = db.Column(db.Integer)
+
+class SessionComparison(db.Model):
+    __tablename__ = 'session_comparison'
+    id = db.Column(db.Integer, primary_key=True)
+    current_session_id = db.Column(db.Integer, db.ForeignKey('session.id'))
+    previous_session_id = db.Column(db.Integer, db.ForeignKey('session.id'))
+    cohens_d = db.Column(db.Float)
+    improvement_percentage = db.Column(db.Float)
+    effect_interpretation = db.Column(db.String(100))
+    comparison_date = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Recommendation(db.Model):
+    __tablename__ = 'recommendation'
+    id = db.Column(db.Integer, primary_key=True)
+    child_id = db.Column(db.Integer, db.ForeignKey('child.id'), nullable=False, index=True)
+    session_id = db.Column(db.Integer, db.ForeignKey('session.id'))
+    category = db.Column(db.String(50))
+    priority = db.Column(db.String(20))
+    message = db.Column(db.Text)
+    action_suggestion = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    acknowledged = db.Column(db.Boolean, default=False)

@@ -204,6 +204,7 @@
 <input type="hidden" id="session_id" value="{{ session_id }}">
 <input type="hidden" id="accuracy_threshold" value="{{ exercise.accuracy_threshold }}">
 <input type="hidden" id="duration" value="{{ exercise.duration_seconds }}">
+<input type="hidden" id="child_age" value="{{ child.age if child.age else 10 }}">
 {% endblock %}
 
 {% block extra_js %}
