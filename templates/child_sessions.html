@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ child.name }}'s Sessions - BrainCoach AI{% endblock %}
+
+{% block extra_css %}
+<style>
+    .session-card {
+        background: white;
+        border-radius: 15px;
+        border: 2px solid #e5e7eb;
+        transition: all 0.3s;
+        margin-bottom: 20px;
+    }
+
+    .session-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+        border-color: var(--primary);
+    }
+
+    .stat-box {
+        background: #f9fafb;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .stat-label {
+        font-size: 14px;
+        color: #6b7280;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+
+    .stat-value {
+        font-size: 32px;
+        font-weight: bold;
+        color: var(--primary);
+    }
+
+    .grade-badge {
+        display: inline-block;
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    .grade-A {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .grade-B {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .grade-C {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .grade-D, .grade-F {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .progress-bar-custom {
+        height: 10px;
+        border-radius: 50px;
+        background: #e5e7eb;
+        overflow: hidden;
+        margin-top: 10px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        transition: width 0.5s ease;
+    }
+
+    .header-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 20px;
+        margin-bottom: 30px;
+    }
+
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        background: white;
+        color: var(--primary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+                <li class="breadcrumb-item active">{{ child.name }}'s Sessions</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="header-section">
+    <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+            <div class="icon-circle me-4">
+                🧒
+            </div>
+            <div>
+                <h1 class="fw-bold mb-2">{{ child.name }}'s Progress</h1>
+                <p class="mb-0 opacity-75">
+                    {% if child.age %}Age: {{ child.age }}{% endif %}
+                    {% if child.grade %} • Grade: {{ child.grade }}{% endif %}
+                    • Access Code: <span class="fw-bold">{{ child.access_code }}</span>
+                </p>
+            </div>
+        </div>
+        <a href="{{ url_for('dashboard.index') }}" class="btn btn-light btn-lg">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<!-- Statistics Summary -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stat-box">
+            <div class="stat-label">Total Sessions</div>
+            <div class="stat-value">{{ stats.total_sessions }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-box">
+            <div class="stat-label">Average Accuracy</div>
+            <div class="stat-value">{{ stats.avg_accuracy|round(1) }}%</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-box">
+            <div class="stat-label">Best Accuracy</div>
+            <div class="stat-value">{{ stats.best_accuracy|round(1) }}%</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-box">
+            <div class="stat-label">Total Time</div>
+            <div class="stat-value">{{ stats.total_time_minutes }}<small class="fs-6">m</small></div>
+        </div>
+    </div>
+</div>
+
+<!-- Sessions List -->
+<div class="card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">
+            <i class="bi bi-clock-history"></i> Session History
+        </h4>
+        <span class="badge bg-primary">{{ sessions|length }} Total</span>
+    </div>
+
+    {% if sessions %}
+        {% for session in sessions %}
+        <div class="session-card p-4">
+            <div class="row align-items-center">
+                <div class="col-md-2">
+                    <div class="icon-circle" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
+                        <i class="bi bi-award-fill"></i>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="fw-bold mb-1">
+                        {{ session.exercise.title if session.exercise else 'Exercise #' + session.exercise_id|string }}
+                    </h6>
+                    <small class="text-muted">
+                        <i class="bi bi-calendar3"></i>
+                        {{ session.start_time.strftime('%b %d, %Y at %I:%M %p') if session.start_time else 'Date unavailable' }}
+                    </small>
+                    <br>
+                    {% if session.end_time and session.start_time %}
+                    <small class="text-muted">
+                        <i class="bi bi-clock"></i>
+                        Duration: {{ ((session.end_time - session.start_time).seconds // 60) }} min
+                    </small>
+                    {% endif %}
+                </div>
+                <div class="col-md-2">
+                    {% if session.result_status %}
+                    <span class="badge {% if session.result_status == 'Completed' %}bg-success{% else %}bg-warning{% endif %}">
+                        {{ session.result_status }}
+                    </span>
+                    {% endif %}
+                    {% if session.performance_grade %}
+                    <br>
+                    <span class="grade-badge grade-{{ session.performance_grade }} mt-2">
+                        Grade {{ session.performance_grade }}
+                    </span>
+                    {% endif %}
+                </div>
+                <div class="col-md-5">
+                    <div class="row g-2">
+                        {% if session.avg_accuracy %}
+                        <div class="col-6">
+                            <small class="text-muted d-block">Accuracy</small>
+                            <strong class="text-primary">{{ session.avg_accuracy|round(1) }}%</strong>
+                            <div class="progress-bar-custom">
+                                <div class="progress-fill" style="width: {{ session.avg_accuracy }}%"></div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if session.consistency_score %}
+                        <div class="col-6">
+                            <small class="text-muted d-block">Consistency</small>
+                            <strong class="text-success">{{ (session.consistency_score * 100)|round(1) }}%</strong>
+                            <div class="progress-bar-custom">
+                                <div class="progress-fill" style="width: {{ (session.consistency_score * 100) }}%"></div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if session.composite_score %}
+                        <div class="col-6">
+                            <small class="text-muted d-block">Composite Score</small>
+                            <strong class="text-info">{{ session.composite_score|round(1) }}</strong>
+                        </div>
+                        {% endif %}
+
+                        {% if session.total_score %}
+                        <div class="col-6">
+                            <small class="text-muted d-block">Total Points</small>
+                            <strong class="text-warning">{{ session.total_score }}</strong>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {% if session.pattern_detected %}
+            <div class="alert alert-info mt-3 mb-0">
+                <i class="bi bi-lightbulb-fill"></i>
+                <strong>AI Pattern Detected:</strong> Our analysis noticed specific patterns in this session that may help improve performance.
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="text-center py-5">
+            <div class="fs-1 mb-3">📊</div>
+            <h5 class="text-muted">No Sessions Yet</h5>
+            <p class="text-muted">{{ child.name }} hasn't completed any exercises yet.</p>
+            <a href="{{ url_for('dashboard.select_exercise', child_id=child.id) }}" class="btn btn-primary mt-3">
+                <i class="bi bi-play-fill"></i> Start First Exercise
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

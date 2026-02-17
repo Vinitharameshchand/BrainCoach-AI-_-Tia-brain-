@@ -85,12 +85,17 @@ def add_child():
         name=name,
         age=age_int,
         grade=grade if grade else None,
-        parent_id=current_user.id
+        parent_id=current_user.id,
+        is_active=True
     )
+
+    # Generate unique access code
+    new_child.generate_access_code()
+
     db.session.add(new_child)
     db.session.commit()
-    
-    flash(f'{name} has been added successfully! 🎉')
+
+    flash(f'{name} has been added successfully! Access Code: {new_child.access_code} 🎉', 'success')
     return redirect(url_for('dashboard.index'))
 
 @dashboard.route('/child/delete/<int:child_id>')
@@ -122,3 +127,67 @@ def select_exercise(child_id):
                           child=child,
                           modules=modules,
                           exercises=exercises)
+
+@dashboard.route('/child/<int:child_id>/toggle-active')
+@login_required
+def toggle_child_active(child_id):
+    """Toggle child account active/inactive status"""
+    child = Child.query.get_or_404(child_id)
+    if child.parent_id != current_user.id:
+        flash('Unauthorized action.', 'error')
+        return redirect(url_for('dashboard.index'))
+
+    child.is_active = not child.is_active
+    db.session.commit()
+
+    status = "activated" if child.is_active else "deactivated"
+    flash(f'{child.name}\'s account has been {status}.', 'success')
+    return redirect(url_for('dashboard.index'))
+
+@dashboard.route('/child/<int:child_id>/regenerate-code')
+@login_required
+def regenerate_access_code(child_id):
+    """Generate a new access code for a child"""
+    child = Child.query.get_or_404(child_id)
+    if child.parent_id != current_user.id:
+        flash('Unauthorized action.', 'error')
+        return redirect(url_for('dashboard.index'))
+
+    old_code = child.access_code
+    child.generate_access_code()
+    db.session.commit()
+
+    flash(f'New access code for {child.name}: {child.access_code} (Old code deactivated)', 'success')
+    return redirect(url_for('dashboard.index'))
+
+@dashboard.route('/child/<int:child_id>/sessions')
+@login_required
+def view_child_sessions(child_id):
+    """View detailed session history for a specific child"""
+    child = Child.query.get_or_404(child_id)
+    if child.parent_id != current_user.id:
+        flash('Unauthorized action.', 'error')
+        return redirect(url_for('dashboard.index'))
+
+    # Get all sessions for this child
+    sessions = Session.query.filter_by(
+        child_id=child.id
+    ).order_by(Session.start_time.desc()).all()
+
+    # Calculate statistics
+    completed_sessions = [s for s in sessions if s.result_status == 'Completed' and s.avg_accuracy]
+
+    stats = {
+        'total_sessions': len(completed_sessions),
+        'avg_accuracy': sum(s.avg_accuracy for s in completed_sessions) / len(completed_sessions) if completed_sessions else 0,
+        'best_accuracy': max((s.avg_accuracy for s in completed_sessions), default=0),
+        'total_time_minutes': sum(
+            ((s.end_time - s.start_time).seconds // 60)
+            for s in completed_sessions if s.end_time and s.start_time
+        )
+    }
+
+    return render_template('child_sessions.html',
+                          child=child,
+                          sessions=sessions,
+                          stats=stats)

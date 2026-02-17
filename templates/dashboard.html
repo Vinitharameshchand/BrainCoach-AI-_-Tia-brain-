@@ -213,19 +213,29 @@
         <h4 class="fw-bold mb-4">Our Explorers</h4>
         {% if children %}
         {% for child in children %}
-        <div class="card mb-3 child-card" onclick="loadChildAnalytics({{ child.id }}, '{{ child.name }}', {{ child.age if child.age else 10 }})">
+        <div class="card mb-3 child-card {% if not child.is_active %}opacity-75{% endif %}">
             <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center">
+                <div class="d-flex align-items-start justify-content-between mb-3">
+                    <div class="d-flex align-items-center flex-grow-1">
                         <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3">
                             <span class="fs-3">🧒</span>
                         </div>
-                        <div>
-                            <h5 class="fw-bold mb-0">{{ child.name }}</h5>
-                            <div class="d-flex gap-2 mt-1">
-                                <span class="level-badge">Level {{ (child.sessions|length // 5) + 1 }}</span>
-                                <span class="badge bg-info" id="grade-{{ child.id }}">Loading...</span>
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center gap-2">
+                                <h5 class="fw-bold mb-0">{{ child.name }}</h5>
+                                {% if child.is_active %}
+                                    <span class="badge bg-success-subtle text-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-danger-subtle text-danger">Inactive</span>
+                                {% endif %}
                             </div>
+                            <div class="d-flex gap-2 mt-2">
+                                {% if child.age %}<small class="text-muted">Age: {{ child.age }}</small>{% endif %}
+                                {% if child.grade %}<small class="text-muted">• Grade: {{ child.grade }}</small>{% endif %}
+                            </div>
+                            {% if child.last_access %}
+                            <small class="text-muted">Last active: {{ child.last_access.strftime('%b %d, %Y') }}</small>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="dropdown" onclick="event.stopPropagation()">
@@ -235,20 +245,48 @@
                             <li><a class="dropdown-item py-2"
                                     href="{{ url_for('dashboard.select_exercise', child_id=child.id) }}">🎯
                                     Start Training</a></li>
-                            <li><a class="dropdown-item py-2" href="javascript:void(0)"
-                                    onclick="loadChildAnalytics({{ child.id }}, '{{ child.name }}', {{ child.age if child.age else 10 }})">📊
-                                    View Analytics</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ url_for('dashboard.view_child_sessions', child_id=child.id) }}">📊
+                                    View All Sessions</a></li>
                             <li><a class="dropdown-item py-2" href="javascript:void(0)"
                                     onclick="loadRecommendations({{ child.id }}, '{{ child.name }}')">💡
                                     Recommendations</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
+                            <li><a class="dropdown-item py-2"
+                                    href="{{ url_for('dashboard.toggle_child_active', child_id=child.id) }}">
+                                    {% if child.is_active %}🔒 Deactivate Account{% else %}🔓 Activate Account{% endif %}
+                                </a></li>
+                            <li><a class="dropdown-item py-2"
+                                    href="{{ url_for('dashboard.regenerate_access_code', child_id=child.id) }}"
+                                    onclick="return confirm('Generate new access code? The old code will stop working.')">🔄
+                                    Regenerate Code</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li><a class="dropdown-item py-2 text-danger"
-                                    href="{{ url_for('dashboard.delete_child', child_id=child.id) }}">🗑️ Remove</a>
+                                    href="{{ url_for('dashboard.delete_child', child_id=child.id) }}"
+                                    onclick="return confirm('Are you sure? This will delete all session data.')">🗑️ Remove</a>
                             </li>
                         </ul>
                     </div>
+                </div>
+
+                <!-- Access Code Section -->
+                <div class="alert alert-info mb-0 d-flex align-items-center justify-content-between" style="background: linear-gradient(135deg, #667eea15, #764ba215); border: 2px dashed #667eea;">
+                    <div>
+                        <small class="text-muted d-block mb-1">Student Access Code</small>
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="fs-3 fw-bold text-primary font-monospace" id="code-{{ child.id }}">{{ child.access_code or 'N/A' }}</span>
+                            <button class="btn btn-sm btn-outline-primary" onclick="copyCode('{{ child.access_code }}', {{ child.id }})" title="Copy code">
+                                <i class="bi bi-clipboard"></i>
+                            </button>
+                        </div>
+                        <small class="text-muted">Share this code with {{ child.name }} to login</small>
+                    </div>
+                    <a href="/student/login" target="_blank" class="btn btn-primary btn-sm">
+                        Student Login →
+                    </a>
                 </div>
             </div>
         </div>
@@ -723,6 +761,24 @@
     // Refresh analytics
     function refreshAnalytics() {
         location.reload();
+    }
+
+    // Copy access code to clipboard
+    function copyCode(code, childId) {
+        navigator.clipboard.writeText(code).then(() => {
+            // Show success feedback
+            const codeElement = document.getElementById(`code-${childId}`);
+            const originalText = codeElement.textContent;
+            codeElement.textContent = '✓ Copied!';
+            codeElement.classList.add('text-success');
+
+            setTimeout(() => {
+                codeElement.textContent = originalText;
+                codeElement.classList.remove('text-success');
+            }, 2000);
+        }).catch(err => {
+            alert('Failed to copy code. Please copy manually: ' + code);
+        });
     }
 
     // Load initial data for each child
