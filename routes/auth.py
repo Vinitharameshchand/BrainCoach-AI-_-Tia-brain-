@@ -5,6 +5,10 @@ from models import db, Parent
 
 auth = Blueprint('auth', __name__)
 
+@auth.route('/')
+def landing():
+    return render_template('landing.html')
+
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':

@@ -3,16 +3,16 @@
    ═══════════════════════════════════════════════════════════ */
 
 :root {
-    /* Primary Brand Colors - Vibrant & Modern */
-    --primary: #6366f1;
-    --primary-dark: #4f46e5;
-    --primary-light: #818cf8;
-    --primary-subtle: #eef2ff;
+    /* Primary Brand Colors - Vibrant & Premium */
+    --primary: #8b5cf6;
+    --primary-dark: #7c3aed;
+    --primary-light: #a78bfa;
+    --primary-subtle: #f5f3ff;
 
     /* Secondary Colors */
-    --secondary: #8b5cf6;
-    --secondary-dark: #7c3aed;
-    --secondary-light: #a78bfa;
+    --secondary: #ec4899;
+    --secondary-dark: #db2777;
+    --secondary-light: #f472b6;
 
     /* Accent Colors */
     --accent-pink: #ec4899;
@@ -32,35 +32,35 @@
     --info-light: #dbeafe;
 
     /* Neutral Palette */
-    --gray-50: #f9fafb;
-    --gray-100: #f3f4f6;
-    --gray-200: #e5e7eb;
-    --gray-300: #d1d5db;
-    --gray-400: #9ca3af;
-    --gray-500: #6b7280;
-    --gray-600: #4b5563;
-    --gray-700: #374151;
-    --gray-800: #1f2937;
-    --gray-900: #111827;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #64748b;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
 
     /* Background Colors */
     --bg-primary: #ffffff;
-    --bg-secondary: #f9fafb;
-    --bg-tertiary: #f3f4f6;
+    --bg-secondary: #fdfcff;
+    --bg-tertiary: #f8fafc;
 
     /* Text Colors */
-    --text-primary: #111827;
-    --text-secondary: #6b7280;
-    --text-tertiary: #9ca3af;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-tertiary: #94a3b8;
 
     /* Shadows - Layered for depth */
-    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-    --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.4);
+    --shadow-xs: 0 1px 2px 0 rgba(139, 92, 246, 0.05);
+    --shadow-sm: 0 1px 3px 0 rgba(139, 92, 246, 0.1), 0 1px 2px -1px rgba(139, 92, 246, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(139, 92, 246, 0.1), 0 2px 4px -2px rgba(139, 92, 246, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(139, 92, 246, 0.1), 0 4px 6px -4px rgba(139, 92, 246, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(139, 92, 246, 0.1), 0 8px 10px -6px rgba(139, 92, 246, 0.1);
+    --shadow-2xl: 0 25px 50px -12px rgba(139, 92, 246, 0.25);
+    --shadow-glow: 0 0 25px rgba(139, 92, 246, 0.5);
 
     /* Border Radius */
     --radius-sm: 0.375rem;
@@ -90,7 +90,7 @@
 
 body {
     font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: radial-gradient(circle at top left, #f3e8ff 0%, #ffffff 40%, #fce7f3 100%);
     background-attachment: fixed;
     color: var(--text-primary);
     line-height: 1.6;
@@ -104,19 +104,41 @@ body {
    Typography
    ═══════════════════════════════════════════════════════════ */
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-weight: 700;
     line-height: 1.2;
     color: var(--text-primary);
     letter-spacing: -0.025em;
 }
 
-h1 { font-size: 2.5rem; }
-h2 { font-size: 2rem; }
-h3 { font-size: 1.75rem; }
-h4 { font-size: 1.5rem; }
-h5 { font-size: 1.25rem; }
-h6 { font-size: 1.125rem; }
+h1 {
+    font-size: 2.5rem;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.75rem;
+}
+
+h4 {
+    font-size: 1.5rem;
+}
+
+h5 {
+    font-size: 1.25rem;
+}
+
+h6 {
+    font-size: 1.125rem;
+}
 
 .text-gradient {
     background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -406,6 +428,7 @@ h6 { font-size: 1.125rem; }
         opacity: 0;
         transform: translateY(-20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -502,6 +525,7 @@ h6 { font-size: 1.125rem; }
     0% {
         transform: translateX(-100%);
     }
+
     100% {
         transform: translateX(100%);
     }
@@ -636,9 +660,12 @@ h6 { font-size: 1.125rem; }
    ═══════════════════════════════════════════════════════════ */
 
 @keyframes float {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0);
     }
+
     50% {
         transform: translateY(-15px);
     }
@@ -649,10 +676,13 @@ h6 { font-size: 1.125rem; }
 }
 
 @keyframes pulse {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 1;
         transform: scale(1);
     }
+
     50% {
         opacity: 0.9;
         transform: scale(1.05);
@@ -668,6 +698,7 @@ h6 { font-size: 1.125rem; }
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -763,9 +794,17 @@ h6 { font-size: 1.125rem; }
    ═══════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
-    h1 { font-size: 2rem; }
-    h2 { font-size: 1.75rem; }
-    h3 { font-size: 1.5rem; }
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.75rem;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+    }
 
     .card-body {
         padding: 1rem;
@@ -785,6 +824,7 @@ h6 { font-size: 1.125rem; }
    ═══════════════════════════════════════════════════════════ */
 
 @media print {
+
     .navbar,
     .btn,
     .modal,
