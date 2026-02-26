@@ -157,3 +157,31 @@ def complete_session():
         "redirect": url_for('dashboard.index'),
         "analysis": analysis if 'error' not in analysis else None
     })
+
+@session.route('/api/session/download/<int:session_id>')
+@login_required
+def download_report(session_id):
+    from flask import send_file
+    from utils.pdf_generator import generate_session_report
+    import os
+    
+    sess = Session.query.get_or_404(session_id)
+    
+    # Verify session ownership
+    if sess.child.parent_id != current_user.id:
+        return jsonify({"error": "Unauthorized"}), 403
+    
+    pdf_dir = os.path.join('reports', f'child_{sess.child_id}')
+    pdf_path = os.path.join(pdf_dir, f'session_{session_id}.pdf')
+    
+    if not os.path.exists(pdf_path):
+        os.makedirs(pdf_dir, exist_ok=True)
+        try:
+            generate_session_report(sess, pdf_path)
+        except Exception as e:
+            print(f"Error generating PDF: {e}")
+            return jsonify({"error": f"Failed to generate report: {e}"}), 500
+
+    if os.path.exists(pdf_path):
+        return send_file(pdf_path, as_attachment=True)
+    return jsonify({"error": "Report not found"}), 404

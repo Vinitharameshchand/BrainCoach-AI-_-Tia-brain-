@@ -354,7 +354,8 @@
                             <th>Accuracy</th>
                             <th>Grade</th>
                             <th>Consistency</th>
-                            <th class="pe-4">Status</th>
+                            <th>Status</th>
+                            <th class="pe-4">Action</th>
                         </tr>
                     </thead>
                     <tbody id="sessions-table-body">
@@ -386,11 +387,16 @@
                                 <span class="small text-muted">--</span>
                                 {% endif %}
                             </td>
-                            <td class="pe-4">
+                            <td>
                                 {% if session.pattern_detected %}
                                 <span class="badge bg-warning pattern-alert">⚠️ Pattern</span>
                                 {% else %}
                                 <span class="badge bg-success">✓ Success</span>
+                                {% endif %}
+                            </td>
+                            <td class="pe-4">
+                                {% if session.result_status == 'Completed' %}
+                                <a href="{{ url_for('session.download_report', session_id=session.id) }}" class="btn btn-sm btn-outline-primary" title="Download Report"><i class="bi bi-download"></i></a>
                                 {% endif %}
                             </td>
                         </tr>

@@ -1,408 +1,416 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BrainCoach AI – AI-Powered Brain Training for Kids</title>
-    <meta name="description" content="BrainCoach AI uses cutting-edge hand tracking and AI to make brain training fun, interactive, and effective for children. Track progress in real time.">
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>BrainCoach AI — Where Kids Grow Smarter Every Day</title>
+    <meta name="description" content="BrainCoach AI uses real-time hand tracking, AI-powered analysis and personalized exercises to help children improve focus, coordination and cognitive performance.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
-        * { font-family: 'Outfit', sans-serif; }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* ── Landing Nav ── */
-        .landing-nav {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            z-index: 1000;
-            padding: 1rem 0;
-            background: rgba(255,255,255,0.85);
-            backdrop-filter: blur(20px) saturate(180%);
-            border-bottom: 1px solid rgba(139,92,246,0.1);
-            transition: all 0.3s ease;
+        :root {
+            --purple: #8b5cf6;
+            --purple-dark: #7c3aed;
+            --pink: #ec4899;
+            --pink-dark: #db2777;
+            --teal: #14b8a6;
+            --gold: #f59e0b;
+            --blue: #3b82f6;
+            --green: #10b981;
+            --bg: #faf7ff;
+            --white: #fff;
+            --dark: #0f172a;
+            --gray: #64748b;
+            --border: rgba(139,92,246,0.12);
         }
-        .landing-nav.scrolled {
-            box-shadow: 0 8px 30px rgba(139,92,246,0.12);
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--dark);
+            overflow-x: hidden;
+            line-height: 1.6;
         }
-        .brand-logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+
+        /* ── UTILITIES ─────────────────────────────── */
+        .text-gradient {
+            background: linear-gradient(135deg, var(--purple) 0%, var(--pink) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+        }
+        .btn-glow {
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            color: #fff;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            padding: 1rem 2.5rem;
+            font-size: 1.05rem;
+            cursor: pointer;
             text-decoration: none;
-            letter-spacing: -0.03em;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 30px rgba(139,92,246,0.4);
+            transition: all .3s cubic-bezier(.4,0,.2,1);
+        }
+        .btn-glow:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 40px rgba(139,92,246,0.5);
+            color: #fff;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #e2e8f0;
+            color: var(--dark);
+            font-weight: 600;
+            border-radius: 50px;
+            padding: 0.9rem 2rem;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all .3s ease;
+        }
+        .btn-outline:hover {
+            border-color: var(--purple);
+            color: var(--purple);
+            background: rgba(139,92,246,0.06);
+        }
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(236,72,153,0.08));
+            border: 1px solid rgba(139,92,246,0.2);
+            color: var(--purple-dark);
+            font-weight: 700;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 6px 16px;
+            border-radius: 50px;
+            margin-bottom: 1.2rem;
+        }
+        .glass-card {
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.8);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(139,92,246,0.08);
         }
 
-        /* ── Hero ── */
-        .hero-section {
-            min-height: 100vh;
+        /* ── NAV ──────────────────────────────────── */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 999;
+            padding: 1.2rem 2rem;
+            background: rgba(250,247,255,0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(139,92,246,0.1);
             display: flex;
             align-items: center;
-            padding-top: 80px;
-            background: radial-gradient(circle at 20% 20%, #f3e8ff 0%, #ffffff 50%, #fce7f3 100%);
+            justify-content: space-between;
+        }
+        .brand {
+            font-size: 1.4rem;
+            font-weight: 900;
+            text-decoration: none;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .brand-icon {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        .nav-links { display: flex; align-items: center; gap: 1.5rem; }
+        .nav-links a {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--gray);
+            text-decoration: none;
+            transition: color .2s;
+        }
+        .nav-links a:hover { color: var(--purple); }
+
+        /* ── HERO ─────────────────────────────────── */
+        .hero {
+            min-height: 100vh;
+            padding: 7rem 2rem 5rem;
+            display: flex;
+            align-items: center;
             position: relative;
             overflow: hidden;
         }
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            width: 600px; height: 600px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%);
-            top: -100px; right: -100px;
-            pointer-events: none;
-        }
-        .hero-section::after {
-            content: '';
-            position: absolute;
-            width: 400px; height: 400px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(236,72,153,0.08) 0%, transparent 70%);
-            bottom: -50px; left: -50px;
-            pointer-events: none;
-        }
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(236,72,153,0.1));
-            border: 1px solid rgba(139,92,246,0.2);
-            color: #7c3aed;
-            font-weight: 600;
-            font-size: 0.85rem;
-            padding: 0.4rem 1rem;
-            border-radius: 999px;
+        .hero-wrap { max-width: 1200px; margin: 0 auto; width: 100%; display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 4rem; }
+        .hero-content {}
+        .badge-pill {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(236,72,153,0.1));
+            border: 1px solid rgba(139,92,246,0.3);
+            color: var(--purple-dark);
+            font-weight: 700; font-size: 0.85rem;
+            padding: 8px 18px; border-radius: 50px;
             margin-bottom: 1.5rem;
-            letter-spacing: 0.02em;
         }
-        .hero-title {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 800;
-            line-height: 1.1;
-            letter-spacing: -0.04em;
-            color: #0f172a;
-        }
-        .hero-title .gradient-text {
-            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .hero-subtitle {
-            font-size: 1.15rem;
-            color: #475569;
-            line-height: 1.7;
-            max-width: 520px;
-            margin-top: 1rem;
-        }
-        .hero-cta-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-        .btn-hero-primary {
-            background: linear-gradient(135deg, #8b5cf6, #ec4899);
-            color: white;
-            border: none;
-            padding: 0.85rem 2rem;
-            border-radius: 999px;
-            font-weight: 700;
-            font-size: 1rem;
-            text-decoration: none;
-            transition: all 0.25s ease;
-            box-shadow: 0 6px 24px rgba(139,92,246,0.35);
-        }
-        .btn-hero-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 36px rgba(139,92,246,0.45);
-            color: white;
-        }
-        .btn-hero-outline {
-            background: transparent;
-            color: #7c3aed;
-            border: 2px solid rgba(139,92,246,0.4);
-            padding: 0.85rem 2rem;
-            border-radius: 999px;
-            font-weight: 700;
-            font-size: 1rem;
-            text-decoration: none;
-            transition: all 0.25s ease;
-        }
-        .btn-hero-outline:hover {
-            background: rgba(139,92,246,0.08);
-            border-color: #8b5cf6;
-            color: #7c3aed;
-            transform: translateY(-3px);
-        }
+        .badge-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; animation: blink 1.5s ease-in-out infinite; }
+        @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
 
-        /* floating brain emoji */
-        .hero-visual {
-            position: relative;
-            text-align: center;
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4.2rem);
+            font-weight: 900;
+            line-height: 1.08;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
         }
-        .hero-emoji-card {
-            display: inline-flex;
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--gray);
+            max-width: 520px;
+            margin-bottom: 2.5rem;
+            line-height: 1.75;
+        }
+        .hero-actions { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 3rem; }
+        .hero-stats { display: flex; gap: 2.5rem; padding-top: 2.5rem; border-top: 1px solid rgba(0,0,0,0.06); }
+        .hero-stat-num { font-size: 2rem; font-weight: 900; }
+        .hero-stat-label { font-size: 0.82rem; color: var(--gray); font-weight: 600; }
+
+        /* Hero Visual */
+        .hero-visual { position: relative; height: 520px; }
+        .hero-phone-mock {
+            position: absolute; left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+            width: 280px;
+            background: #1e293b;
+            border-radius: 36px;
+            padding: 16px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.3);
+        }
+        .hero-phone-inner {
+            background: linear-gradient(145deg, #0f172a, #1e293b);
+            border-radius: 24px;
+            overflow: hidden;
+            height: 380px;
+            display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 280px;
-            height: 280px;
-            border-radius: 40% 60% 55% 45% / 45% 45% 55% 55%;
-            background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(236,72,153,0.1));
-            border: 2px solid rgba(139,92,246,0.15);
-            font-size: 7rem;
-            animation: morphFloat 5s ease-in-out infinite;
-            box-shadow: 0 20px 60px rgba(139,92,246,0.2);
-            backdrop-filter: blur(10px);
+            position: relative;
         }
-        @keyframes morphFloat {
-            0%, 100% { border-radius: 40% 60% 55% 45% / 45% 45% 55% 55%; transform: translateY(0); }
-            25%       { border-radius: 60% 40% 45% 55% / 55% 55% 45% 45%; transform: translateY(-12px); }
-            75%       { border-radius: 50% 50% 60% 40% / 40% 60% 50% 50%; transform: translateY(8px); }
-        }
-        /* floating stat pills */
-        .stat-pill {
+        .tracking-dot {
             position: absolute;
-            background: white;
-            border-radius: 999px;
-            padding: 0.5rem 1.1rem;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-            font-weight: 700;
-            font-size: 0.85rem;
-            color: #0f172a;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            animation: floatPill 4s ease-in-out infinite;
+            width: 10px; height: 10px;
+            background: rgba(139,92,246,0.8);
+            border-radius: 50%;
+            animation: trackMove 3s ease-in-out infinite;
         }
-        .stat-pill:nth-child(2) { top: 5%; right: -5%; animation-delay: 0s; }
-        .stat-pill:nth-child(3) { bottom: 15%; left: -8%; animation-delay: 1.5s; }
-        .stat-pill:nth-child(4) { top: 50%; right: -15%; animation-delay: 3s; }
-        @keyframes floatPill {
-            0%,100% { transform: translateY(0); }
-            50%      { transform: translateY(-8px); }
+        @keyframes trackMove {
+            0%,100%{top:40%;left:40%;}
+            25%{top:30%;left:60%;}
+            50%{top:50%;left:55%;}
+            75%{top:65%;left:35%;}
         }
-
-        /* ── Stats Bar ── */
-        .stats-bar {
-            background: linear-gradient(135deg, #8b5cf6, #ec4899);
-            padding: 2.5rem 0;
+        .hand-display { font-size: 5rem; animation: handBob 2s ease-in-out infinite; }
+        @keyframes handBob {
+            0%,100%{transform:translateY(0) rotate(-5deg);}
+            50%{transform:translateY(-15px) rotate(5deg);}
         }
-        .stat-item {
+        .score-ring {
+            margin-top: 1.5rem;
             text-align: center;
             color: white;
         }
-        .stat-number {
-            font-size: 2.2rem;
-            font-weight: 800;
+        .score-ring-val { font-size: 1.8rem; font-weight: 900; color: #a78bfa; }
+        .score-ring-label { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; }
+
+        /* Floating Cards */
+        .float-badge {
+            position: absolute;
+            border-radius: 16px;
+            padding: 14px 18px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .fb-top-left { top: 5%; left: -8%; background: white; animation: float1 4s ease-in-out infinite; }
+        .fb-top-right { top: 10%; right: -5%; background: linear-gradient(135deg, var(--purple), var(--purple-dark)); color: white; animation: float2 5s ease-in-out infinite; }
+        .fb-bottom-left { bottom: 10%; left: -5%; background: white; animation: float3 6s ease-in-out infinite; }
+        .fb-bottom-right { bottom: 5%; right: 0%; background: linear-gradient(135deg, var(--teal), #0d9488); color: white; animation: float1 4.5s ease-in-out infinite; }
+        @keyframes float1{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-12px);} }
+        @keyframes float2{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-18px);} }
+        @keyframes float3{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+
+        /* ── SECTIONS GENERAL ──────────────────────── */
+        section { padding: 6rem 2rem; }
+        .section-wrap { max-width: 1200px; margin: 0 auto; }
+        .section-header { text-align: center; margin-bottom: 4rem; }
+        .section-header h2 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; letter-spacing: -0.02em; margin-bottom: 1rem; }
+        .section-header p { font-size: 1.1rem; color: var(--gray); max-width: 560px; margin: 0 auto; }
+
+        /* ── HOW IT WORKS ──────────────────────────── */
+        .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+        .how-card {
+            background: white;
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            transition: transform .3s ease, box-shadow .3s ease;
+        }
+        .how-card:hover { transform: translateY(-8px); box-shadow: 0 24px 48px rgba(139,92,246,0.15); }
+        .how-card::before {
+            content: attr(data-step);
+            position: absolute;
+            top: -20px; right: 24px;
+            font-size: 6rem;
+            font-weight: 900;
+            color: rgba(139,92,246,0.06);
             line-height: 1;
         }
-        .stat-label {
-            font-size: 0.9rem;
-            opacity: 0.85;
-            margin-top: 0.25rem;
+        .how-icon {
+            width: 64px; height: 64px;
+            border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+        .how-card h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.75rem; }
+        .how-card p { font-size: 0.92rem; color: var(--gray); line-height: 1.7; }
+
+        .connector {
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; color: rgba(139,92,246,0.3), font-weight: bold;
+            display: none;
         }
 
-        /* ── Section ── */
-        .section {
-            padding: 6rem 0;
-        }
-        .section-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(236,72,153,0.08));
-            border: 1px solid rgba(139,92,246,0.15);
-            color: #7c3aed;
-            font-weight: 600;
-            font-size: 0.8rem;
-            padding: 0.3rem 0.9rem;
-            border-radius: 999px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            margin-bottom: 0.75rem;
-        }
-        .section-title {
-            font-size: clamp(1.75rem, 3vw, 2.5rem);
-            font-weight: 800;
-            line-height: 1.2;
-            color: #0f172a;
-            letter-spacing: -0.03em;
-        }
-        .section-subtitle {
-            font-size: 1.05rem;
-            color: #64748b;
-            line-height: 1.7;
-            max-width: 520px;
-            margin: 0.75rem auto 0;
-        }
-
-        /* ── Feature Cards ── */
+        /* ── FEATURES ──────────────────────────────── */
+        .features-bg { background: linear-gradient(180deg, transparent 0%, rgba(139,92,246,0.04) 50%, transparent 100%); }
+        .features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
         .feature-card {
+            border-radius: 24px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            transition: all .3s ease;
+            background: white;
+        }
+        .feature-card.large { grid-column: span 2; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; }
+        .feature-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(139,92,246,0.12); }
+        .feature-icon {
+            width: 56px; height: 56px;
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem;
+            margin-bottom: 1.2rem;
+        }
+        .feature-card h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 0.6rem; }
+        .feature-card p { font-size: 0.9rem; color: var(--gray); line-height: 1.65; }
+        .feature-tag {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .tag-purple { background: rgba(139,92,246,0.1); color: var(--purple-dark); }
+        .tag-pink { background: rgba(236,72,153,0.1); color: var(--pink-dark); }
+        .tag-teal { background: rgba(20,184,166,0.1); color: #0d9488; }
+        .tag-gold { background: rgba(245,158,11,0.1); color: #b45309; }
+
+        /* Live demo block inside feature card */
+        .live-demo {
+            background: #0f172a;
+            border-radius: 18px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .live-demo-bar { height: 8px; border-radius: 50px; background: #1e293b; margin-bottom: 8px; overflow: hidden; }
+        .live-demo-fill { height: 100%; border-radius: 50px; animation: fillBar 3s ease-in-out infinite alternate; }
+        @keyframes fillBar { from{width:50%;} to{width:92%;} }
+        .live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+
+        /* ── EXERCISES SHOWCASE ──────────────────────── */
+        .exercises-scroll { display: flex; gap: 1.5rem; overflow-x: auto; padding-bottom: 1rem; scrollbar-width: none; }
+        .exercises-scroll::-webkit-scrollbar { display: none; }
+        .ex-card {
+            flex: 0 0 260px;
             background: white;
             border-radius: 20px;
-            padding: 2rem;
-            border: 1px solid rgba(139,92,246,0.08);
-            box-shadow: 0 4px 20px rgba(139,92,246,0.06);
-            transition: all 0.3s ease;
-            height: 100%;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            transition: all .3s ease;
         }
-        .feature-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 16px 48px rgba(139,92,246,0.15);
-            border-color: rgba(139,92,246,0.2);
+        .ex-card:hover { transform: translateY(-6px); box-shadow: 0 16px 32px rgba(139,92,246,0.12); }
+        .ex-emoji { font-size: 2.5rem; margin-bottom: 1rem; }
+        .ex-card h4 { font-size: 1rem; font-weight: 800; margin-bottom: 0.4rem; }
+        .ex-card p { font-size: 0.82rem; color: var(--gray); }
+        .ex-level {
+            margin-top: 1rem;
+            display: flex; align-items: center; gap: 6px;
         }
-        .feature-icon {
-            width: 60px; height: 60px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.6rem;
-            margin-bottom: 1.25rem;
-        }
-        .icon-purple { background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(139,92,246,0.08)); }
-        .icon-pink   { background: linear-gradient(135deg, rgba(236,72,153,0.15), rgba(236,72,153,0.08)); }
-        .icon-teal   { background: linear-gradient(135deg, rgba(20,184,166,0.15), rgba(20,184,166,0.08)); }
-        .icon-orange { background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.08)); }
-        .icon-blue   { background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(59,130,246,0.08)); }
-        .icon-green  { background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.08)); }
-        .feature-card h5 {
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: #0f172a;
-            margin-bottom: 0.5rem;
-        }
-        .feature-card p {
-            color: #64748b;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin: 0;
-        }
+        .ex-dot { width: 8px; height: 8px; border-radius: 50%; background: #e2e8f0; }
+        .ex-dot.active { background: var(--purple); }
 
-        /* ── How It Works ── */
-        .hiw-section { background: linear-gradient(135deg, #faf5ff 0%, #fff0f9 100%); }
-        .step-card {
-            text-align: center;
-            padding: 2rem 1rem;
-        }
-        .step-number {
-            width: 52px; height: 52px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #8b5cf6, #ec4899);
-            color: white;
-            font-weight: 800;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1.2rem;
-            box-shadow: 0 6px 20px rgba(139,92,246,0.4);
-        }
-        .step-emoji { font-size: 2.8rem; margin-bottom: 0.75rem; display: block; }
-        .step-card h5 {
-            font-weight: 700;
-            font-size: 1.05rem;
-            color: #0f172a;
-            margin-bottom: 0.4rem;
-        }
-        .step-card p {
-            color: #64748b;
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-        /* Connector line between steps */
-        .step-connector {
-            position: relative;
-        }
-        .step-connector::after {
-            content: '';
-            position: absolute;
-            top: 26px;
-            left: calc(50% + 30px);
-            width: calc(100% - 60px);
-            height: 2px;
-            background: linear-gradient(90deg, #8b5cf6, #ec4899);
-            opacity: 0.25;
-        }
-        @media(max-width:768px) {
-            .step-connector::after { display: none; }
-        }
-
-        /* ── Two Portals ── */
-        .portal-card {
-            border-radius: 24px;
-            padding: 2.5rem;
-            height: 100%;
-            transition: all 0.3s ease;
-        }
-        .portal-parent {
-            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-            color: white;
-        }
-        .portal-student {
-            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
-            color: white;
-        }
-        .portal-card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
-        .portal-icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
-        .portal-card h4 { font-weight: 800; font-size: 1.5rem; margin-bottom: 0.75rem; }
-        .portal-card p { opacity: 0.9; line-height: 1.7; font-size: 0.95rem; }
-        .portal-card ul {
-            list-style: none;
-            padding: 0;
-            margin: 1.25rem 0 1.75rem;
-        }
-        .portal-card ul li {
-            padding: 0.3rem 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.95rem;
-            opacity: 0.9;
-        }
-        .portal-card ul li::before {
-            content: '✓';
-            font-weight: 800;
-            background: rgba(255,255,255,0.25);
-            width: 20px; height: 20px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            flex-shrink: 0;
-        }
-        .btn-portal {
+        /* ── REPORT SHOWCASE ──────────────────────── */
+        .report-section { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 5rem; }
+        .report-mockup {
             background: white;
-            border: none;
-            padding: 0.75rem 1.75rem;
-            border-radius: 999px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.25s ease;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(139,92,246,0.1);
         }
-        .portal-parent .btn-portal { color: #7c3aed; }
-        .portal-student .btn-portal { color: #db2777; }
-        .btn-portal:hover { transform: scale(1.04); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+        .report-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid #f1f5f9; }
+        .report-row:last-child { border-bottom: none; }
+        .report-bar-track { flex: 1; margin: 0 1.5rem; background: #f1f5f9; height: 8px; border-radius: 50px; overflow: hidden; }
+        .report-bar-fill { height: 100%; border-radius: 50px; }
 
-        /* ── CTA ── */
+        /* ── TESTIMONIALS / WHO IS IT FOR ──────────────── */
+        .who-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+        .who-card {
+            background: white;
+            border-radius: 24px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            text-align: center;
+            transition: all .3s ease;
+        }
+        .who-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(139,92,246,0.12); }
+        .who-avatar {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex; align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+        .who-card h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .who-card p { font-size: 0.88rem; color: var(--gray); line-height: 1.65; }
+
+        /* ── CTA SECTION ──────────────────────────── */
         .cta-section {
-            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
-            padding: 6rem 0;
+            background: linear-gradient(135deg, var(--purple-dark) 0%, #4f46e5 40%, var(--pink-dark) 100%);
+            padding: 6rem 2rem;
             text-align: center;
             color: white;
             position: relative;
@@ -410,381 +418,451 @@
         }
         .cta-section::before {
             content: '';
-            position: absolute;
-            width: 400px; height: 400px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.07);
-            top: -100px; left: -80px;
+            position: absolute; inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
         }
-        .cta-section::after {
-            content: '';
-            position: absolute;
-            width: 300px; height: 300px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.07);
-            bottom: -60px; right: -60px;
-        }
-        .cta-section h2 {
-            font-size: clamp(2rem, 4vw, 3rem);
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            position: relative; z-index: 1;
-        }
-        .cta-section p {
-            opacity: 0.88;
-            font-size: 1.1rem;
-            max-width: 480px;
-            margin: 0.75rem auto 2rem;
-            position: relative; z-index: 1;
-        }
-        .btn-cta-white {
-            background: white;
-            color: #7c3aed;
-            padding: 0.9rem 2.2rem;
-            border-radius: 999px;
-            font-weight: 800;
-            text-decoration: none;
-            font-size: 1rem;
-            transition: all 0.25s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            position: relative; z-index: 1;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-        }
-        .btn-cta-white:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 14px 40px rgba(0,0,0,0.3);
-            color: #7c3aed;
-        }
-        .btn-cta-ghost {
-            background: rgba(255,255,255,0.15);
-            color: white;
-            border: 2px solid rgba(255,255,255,0.4);
-            padding: 0.9rem 2.2rem;
-            border-radius: 999px;
-            font-weight: 700;
-            text-decoration: none;
-            font-size: 1rem;
-            transition: all 0.25s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            position: relative; z-index: 1;
-            margin-left: 1rem;
-        }
-        .btn-cta-ghost:hover {
-            background: rgba(255,255,255,0.25);
-            color: white;
-            transform: translateY(-3px);
-        }
+        .cta-section h2 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; margin-bottom: 1.2rem; position: relative; }
+        .cta-section p { font-size: 1.15rem; opacity: 0.8; max-width: 600px; margin: 0 auto 2.5rem; position: relative; }
+        .cta-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; position: relative; }
+        .btn-white { background: white; color: var(--purple-dark); font-weight: 800; border-radius: 50px; padding: 1rem 2.5rem; text-decoration: none; font-size: 1.05rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); transition: all .3s ease; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-white:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.25); color: var(--purple-dark); }
+        .btn-white-outline { background: transparent; color: white; font-weight: 700; border: 2px solid rgba(255,255,255,0.5); border-radius: 50px; padding: 1rem 2.5rem; text-decoration: none; font-size: 1.05rem; transition: all .3s ease; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-white-outline:hover { background: rgba(255,255,255,0.15); color: white; border-color: white; }
 
-        /* ── Footer ── */
-        .landing-footer {
-            background: #0f172a;
-            color: rgba(255,255,255,0.7);
-            padding: 2rem 0;
+        /* ── FOOTER ──────────────────────────────── */
+        footer {
+            padding: 3rem 2rem;
             text-align: center;
-            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.88rem;
+            color: var(--gray);
         }
-        .landing-footer a { color: rgba(255,255,255,0.9); text-decoration: none; font-weight: 600; }
-        .landing-footer a:hover { color: #a78bfa; }
+        footer strong { color: var(--dark); }
 
-        /* Scroll animations */
-        .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
-        .reveal.visible { opacity: 1; transform: translateY(0); }
+        /* ── BG DECORATION ────────────────────────── */
+        .bg-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.25;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .blob1 { top: -200px; right: -200px; width: 600px; height: 600px; background: var(--purple); }
+        .blob2 { bottom: -200px; left: -200px; width: 500px; height: 500px; background: var(--pink); }
+
+        /* ── RESPONSIVE ──────────────────────────── */
+        @media (max-width: 900px) {
+            .hero-wrap { grid-template-columns: 1fr; }
+            .hero-visual { height: 300px; }
+            .how-grid, .features-grid, .report-section, .who-grid { grid-template-columns: 1fr; }
+            .feature-card.large { grid-column: span 1; grid-template-columns: 1fr; }
+            .fb-top-left, .fb-top-right, .fb-bottom-right { display: none; }
+        }
     </style>
 </head>
+<body>
 
-<body style="padding-top: 0;">
+<!-- Background Blobs -->
+<div class="bg-blob blob1"></div>
+<div class="bg-blob blob2"></div>
 
-<!-- ══════════════════════════  NAVBAR  ══════════════════════════ -->
-<nav class="landing-nav" id="mainNav">
-    <div class="container d-flex justify-content-between align-items-center">
-        <a href="#" class="brand-logo">🧠 BrainCoach AI</a>
-        <div class="d-flex align-items-center gap-3">
-            <a href="{{ url_for('auth.login') }}" class="text-decoration-none fw-semibold" style="color:#475569; font-size:0.95rem;">Login</a>
-            <a href="{{ url_for('auth.register') }}" class="btn-hero-primary" style="padding:0.55rem 1.4rem; font-size:0.9rem;">Get Started</a>
-        </div>
+<!-- ═══ NAV ═══════════════════════════════════════════ -->
+<nav>
+    <a href="/" class="brand">
+        <div class="brand-icon"><i class="bi bi-robot"></i></div>
+        BrainCoach AI
+    </a>
+    <div class="nav-links">
+        <a href="#how">How It Works</a>
+        <a href="#features">Features</a>
+        <a href="#exercises">Exercises</a>
+        <a href="{{ url_for('auth.login') }}" class="btn-outline" style="padding:.6rem 1.4rem; font-size:.9rem;">Parent Login</a>
+        <a href="{{ url_for('auth.login') }}" class="btn-glow" style="padding:.65rem 1.6rem; font-size:.9rem;">
+            Start Free <i class="bi bi-arrow-right"></i>
+        </a>
     </div>
 </nav>
 
-<!-- ══════════════════════════  HERO  ══════════════════════════ -->
-<section class="hero-section">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6 mb-5 mb-lg-0">
-                <div class="hero-badge">
-                    <span>✨</span> AI-Powered Brain Training
-                </div>
-                <h1 class="hero-title">
-                    Train Smarter,<br>
-                    Grow <span class="gradient-text">Stronger</span> Minds
-                </h1>
-                <p class="hero-subtitle">
-                    BrainCoach AI combines hand-tracking technology and personalised AI to make cognitive training engaging, measurable, and fun — designed specifically for children.
-                </p>
-                <div class="hero-cta-group">
-                    <a href="{{ url_for('auth.register') }}" class="btn-hero-primary">
-                        🚀 Start Free Today
-                    </a>
-                    <a href="{{ url_for('auth.login') }}" class="btn-hero-outline">
-                        Sign In →
-                    </a>
-                </div>
-                <p style="margin-top:1.25rem; font-size:0.85rem; color:#94a3b8;">
-                    No credit card required &nbsp;·&nbsp; Free to get started
-                </p>
+
+<!-- ═══ HERO ════════════════════════════════════════════ -->
+<section class="hero" style="background: radial-gradient(ellipse at 70% 30%, rgba(139,92,246,0.12) 0%, transparent 60%), radial-gradient(ellipse at 20% 80%, rgba(236,72,153,0.1) 0%, transparent 50%), var(--bg);">
+    <div class="hero-wrap">
+        <div class="hero-content">
+            <div class="badge-pill">
+                <div class="badge-dot"></div>
+                Now Live — AI-Powered Cognitive Training for Kids
             </div>
-            <div class="col-lg-6">
-                <div class="hero-visual">
-                    <div class="hero-emoji-card">🧠</div>
-                    <div class="stat-pill">
-                        🏆 100+ Exercises
+            <h1>
+                Train Smarter,<br>
+                Grow <span class="text-gradient">Faster</span> Together.
+            </h1>
+            <p>BrainCoach AI is a cutting-edge platform that combines real-time hand tracking, MediaPipe computer vision, and personalised AI exercises to unlock every child's unique potential — one session at a time.</p>
+            <div class="hero-actions">
+                <a href="{{ url_for('auth.login') }}" class="btn-glow" id="start-btn">
+                    🚀 Start Free <i class="bi bi-arrow-right"></i>
+                </a>
+                <a href="{{ url_for('student.login') }}" class="btn-outline">
+                    <i class="bi bi-person-badge"></i> Student Login
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div>
+                    <div class="hero-stat-num text-gradient">98%</div>
+                    <div class="hero-stat-label">Tracking Accuracy</div>
+                </div>
+                <div>
+                    <div class="hero-stat-num text-gradient">Real-Time</div>
+                    <div class="hero-stat-label">AI Feedback</div>
+                </div>
+                <div>
+                    <div class="hero-stat-num text-gradient">PDF</div>
+                    <div class="hero-stat-label">Performance Reports</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-visual">
+            <!-- Floating badges -->
+            <div class="float-badge fb-top-left glass-card" style="border-radius:16px; background: white;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span style="font-size:1.5rem;">🏆</span>
+                    <div>
+                        <div style="font-size:0.78rem;font-weight:800;">Grade A Achieved!</div>
+                        <div style="font-size:0.7rem;color:var(--gray);">Session #14 • Alex</div>
                     </div>
-                    <div class="stat-pill">
-                        📊 Real-time Analytics
+                </div>
+            </div>
+            <div class="float-badge fb-top-right" style="font-size:0.78rem;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="bi bi-graph-up-arrow"></i>
+                    <span>+18% this week</span>
+                </div>
+                <div style="font-size:0.68rem;opacity:0.7;margin-top:2px;">Performance improving</div>
+            </div>
+            <div class="float-badge fb-bottom-left glass-card" style="background:white;border-radius:16px;">
+                <div style="font-size:0.78rem;font-weight:800;color:var(--gray);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Live Accuracy</div>
+                <div style="display:flex;gap:3px;">
+                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(139,92,246,0.15);display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;color:var(--purple);">9</div>
+                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(139,92,246,0.15);display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;color:var(--purple);">2</div>
+                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(139,92,246,0.15);display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;color:var(--purple);">%</div>
+                </div>
+            </div>
+            <div class="float-badge fb-bottom-right" style="font-size:0.78rem;">
+                <i class="bi bi-camera-video-fill"></i> MediaPipe Active
+            </div>
+
+            <!-- Phone Mock -->
+            <div class="hero-phone-mock">
+                <div class="hero-phone-inner">
+                    <div style="position:absolute;inset:0;opacity:0.08;background: linear-gradient(135deg, var(--purple), var(--pink));"></div>
+                    <div class="tracking-dot"></div>
+                    <div class="hand-display">🖐️</div>
+                    <div class="score-ring">
+                        <div class="score-ring-val" id="live-score">92%</div>
+                        <div class="score-ring-label">Focus Score</div>
                     </div>
-                    <div class="stat-pill">
-                        🤚 Hand Tracking
+                    <div style="margin-top:1rem;display:flex;gap:6px;">
+                        <div style="height:4px;width:40px;border-radius:50px;background:var(--purple);animation:fillBar 2s ease-in-out infinite alternate;"></div>
+                        <div style="height:4px;width:30px;border-radius:50px;background:var(--pink);animation:fillBar 2.5s ease-in-out infinite alternate;"></div>
+                        <div style="height:4px;width:50px;border-radius:50px;background:var(--teal);animation:fillBar 3s ease-in-out infinite alternate;"></div>
+                    </div>
+                    <div style="position:absolute;bottom:12px;font-size:0.6rem;color:#64748b;text-transform:uppercase;letter-spacing:.1em;">Hand Tracking Active</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ═══ HOW IT WORKS ═════════════════════════════════════ -->
+<section id="how" style="background:white;">
+    <div class="section-wrap">
+        <div class="section-header">
+            <div class="section-label">⚡ Simple & Powerful</div>
+            <h2>How BrainCoach AI Works</h2>
+            <p>A seamless three-step journey from login to a personalized performance report — all powered by AI.</p>
+        </div>
+        <div class="how-grid">
+            <div class="how-card" data-step="1">
+                <div class="how-icon" style="background:linear-gradient(135deg,rgba(139,92,246,0.15),rgba(139,92,246,0.05));">🎯</div>
+                <h3>Set Up Your Child's Profile</h3>
+                <p>Parents create a simple profile for each child in seconds. The AI instantly adapts exercise difficulty and accuracy thresholds based on the child's age and developmental stage.</p>
+                <div class="feature-tag tag-purple">📋 1-minute setup</div>
+            </div>
+            <div class="how-card" data-step="2">
+                <div class="how-icon" style="background:linear-gradient(135deg,rgba(236,72,153,0.15),rgba(236,72,153,0.05));">📷</div>
+                <h3>Practice with Live Camera Tracking</h3>
+                <p>The child follows hand-yoga or finger exercises shown via a YouTube guide video on the left. Their webcam captures movements in real-time using MediaPipe's 21-landmark hand model.</p>
+                <div class="feature-tag tag-pink">🎥 Real-time vision</div>
+            </div>
+            <div class="how-card" data-step="3">
+                <div class="how-icon" style="background:linear-gradient(135deg,rgba(20,184,166,0.15),rgba(20,184,166,0.05));">📊</div>
+                <h3>Get AI-Powered Insights & Reports</h3>
+                <p>After each session, the AI calculates accuracy, consistency score and a composite grade. Parents receive a downloadable PDF report with personalised recommendations.</p>
+                <div class="feature-tag tag-teal">📄 PDF Reports</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ═══ FEATURES ══════════════════════════════════════════ -->
+<section id="features" class="features-bg">
+    <div class="section-wrap">
+        <div class="section-header">
+            <div class="section-label">✨ Built Different</div>
+            <h2>Every Feature Has a Purpose</h2>
+            <p>From computer vision to AI coaching — every tool is crafted to make children perform better, and parents feel confident.</p>
+        </div>
+        <div class="features-grid">
+
+            <!-- Big feature: Live Tracking -->
+            <div class="feature-card large">
+                <div>
+                    <div class="feature-icon" style="background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(139,92,246,0.05));">👁️</div>
+                    <h3>21-Point MediaPipe Hand Tracking</h3>
+                    <p>Using Google's MediaPipe Hands model, BrainCoach AI maps 21 precise landmarks on each hand at up to 60fps. Every finger curl, thumb position, and palm orientation is evaluated in real time against the instructor video — giving children instant visual feedback and parents highly granular data.</p>
+                    <div class="feature-tag tag-purple" style="margin-top:1rem;">Computer Vision</div>
+                    <div class="feature-tag tag-pink" style="margin-left:6px;">60 FPS Processing</div>
+                </div>
+                <div class="live-demo">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                        <span style="color:#a78bfa;font-weight:700;font-size:0.8rem;">LIVE SESSION</span>
+                        <span style="display:flex;align-items:center;gap:6px;font-size:0.75rem;color:#94a3b8;"><span style="width:8px;height:8px;background:#10b981;border-radius:50%;display:inline-block;"></span> Tracking Active</span>
+                    </div>
+                    <div style="font-size:0.75rem;color:#64748b;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;">Thumb</div>
+                    <div class="live-demo-bar"><div class="live-demo-fill" style="background:linear-gradient(90deg,#8b5cf6,#ec4899);"></div></div>
+                    <div style="font-size:0.75rem;color:#64748b;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;margin-top:12px;">Index Finger</div>
+                    <div class="live-demo-bar"><div class="live-demo-fill" style="background:linear-gradient(90deg,#3b82f6,#8b5cf6);animation-duration:2.5s;"></div></div>
+                    <div style="font-size:0.75rem;color:#64748b;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;margin-top:12px;">Palm Stability</div>
+                    <div class="live-demo-bar"><div class="live-demo-fill" style="background:linear-gradient(90deg,#10b981,#14b8a6);animation-duration:1.8s;"></div></div>
+                    <div style="margin-top:1.5rem;padding:1rem;background:#1e293b;border-radius:12px;font-size:0.78rem;">
+                        <span class="live-dot" style="background:#10b981;"></span><span style="color:#94a3b8;">Landmarks detected:</span> <strong style="color:#a78bfa;">21/21</strong>
+                        <span style="float:right;color:#f59e0b;font-weight:700;">Frame #2,840</span>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</section>
 
-<!-- ══════════════════════════  STATS  ══════════════════════════ -->
-<div class="stats-bar">
-    <div class="container">
-        <div class="row g-4">
-            <div class="col-6 col-md-3">
-                <div class="stat-item">
-                    <div class="stat-number">AI 🤖</div>
-                    <div class="stat-label">Powered Feedback</div>
-                </div>
+            <!-- AI Scoring -->
+            <div class="feature-card">
+                <div class="feature-icon" style="background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05));">🧠</div>
+                <h3>Composite AI Scoring Engine</h3>
+                <p>Our proprietary scoring algorithm combines raw accuracy, movement consistency, trend velocity and age-adaptive thresholds into a single composite grade — from A to F. Linear regression predicts the next session's score so parents know what to expect.</p>
+                <div class="feature-tag tag-gold">Trend Analysis</div>
             </div>
-            <div class="col-6 col-md-3">
-                <div class="stat-item">
-                    <div class="stat-number">🤚 Real-time</div>
-                    <div class="stat-label">Hand Tracking</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="stat-item">
-                    <div class="stat-number">📈 360°</div>
-                    <div class="stat-label">Progress Reports</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="stat-item">
-                    <div class="stat-number">🔒 Secure</div>
-                    <div class="stat-label">Parent Dashboard</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- ══════════════════════════  FEATURES  ══════════════════════════ -->
-<section class="section" id="features">
-    <div class="container">
-        <div class="text-center mb-5 reveal">
-            <div class="section-badge">⚡ Features</div>
-            <h2 class="section-title">Everything you need to<br>boost your child's brain</h2>
-            <p class="section-subtitle">A complete ecosystem for cognitive training — tracking, analytics, and personalised AI all in one place.</p>
-        </div>
-        <div class="row g-4">
-            <div class="col-md-6 col-lg-4 reveal">
-                <div class="feature-card">
-                    <div class="feature-icon icon-purple">🤚</div>
-                    <h5>Real-Time Hand Tracking</h5>
-                    <p>Advanced computer vision detects hand gestures live via your camera — no expensive hardware needed. Exercises respond instantly to every movement.</p>
-                </div>
+            <!-- Reports -->
+            <div class="feature-card">
+                <div class="feature-icon" style="background: linear-gradient(135deg, rgba(20,184,166,0.15), rgba(20,184,166,0.05));">📄</div>
+                <h3>One-Click PDF Performance Report</h3>
+                <p>Every completed session generates a professional PDF report — downloadable by both parents and students. Reports include average accuracy, total score, AI recommendations, and a session timeline.</p>
+                <div class="feature-tag tag-teal">Instant Download</div>
             </div>
-            <div class="col-md-6 col-lg-4 reveal" style="transition-delay:0.1s">
-                <div class="feature-card">
-                    <div class="feature-icon icon-pink">🤖</div>
-                    <h5>AI-Powered Scoring</h5>
-                    <p>Our machine-learning model evaluates accuracy, speed, and consistency to generate personalised difficulty adjustments and improvement recommendations.</p>
-                </div>
+
+            <!-- Parental Dashboard -->
+            <div class="feature-card">
+                <div class="feature-icon" style="background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(59,130,246,0.05));">📊</div>
+                <h3>Parental Analytics Dashboard</h3>
+                <p>Parents see an at-a-glance overview of all children on a single screen. Interactive trend charts, session history tables, consistency scores, pattern detection alerts, and personalised AI recommendations are all in one place.</p>
+                <div class="feature-tag" style="background:rgba(59,130,246,0.1);color:#1d4ed8;">Multi-Child Support</div>
             </div>
-            <div class="col-md-6 col-lg-4 reveal" style="transition-delay:0.2s">
-                <div class="feature-card">
-                    <div class="feature-icon icon-teal">📊</div>
-                    <h5>Detailed Analytics</h5>
-                    <p>Interactive charts show session-by-session improvement, skill breakdowns, and long-term trends so you always know exactly where your child stands.</p>
-                </div>
+
+            <!-- Student Mode -->
+            <div class="feature-card">
+                <div class="feature-icon" style="background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.05));">🎮</div>
+                <h3>Kid-Friendly Student Mode</h3>
+                <p>Children log in with a simple 6-digit access code — no email needed. The interface is bright, animated, and gamified with emoji feedback, star ratings and a Trophy Case to keep kids motivated every day.</p>
+                <div class="feature-tag" style="background:rgba(16,185,129,0.1);color:#065f46;">Gamified UX</div>
             </div>
-            <div class="col-md-6 col-lg-4 reveal" style="transition-delay:0.3s">
-                <div class="feature-card">
-                    <div class="feature-icon icon-orange">👨‍👩‍👧</div>
-                    <h5>Parent Dashboard</h5>
-                    <p>Create and manage child profiles, review session history, download PDF reports, and get AI-powered insights — all from one clean dashboard.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-4 reveal" style="transition-delay:0.4s">
-                <div class="feature-card">
-                    <div class="feature-icon icon-blue">🎮</div>
-                    <h5>Interactive Exercises</h5>
-                    <p>Engaging brain-training exercises designed around cognitive development — finger coordination, memory, reaction time, and more. Kids actually enjoy them!</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-4 reveal" style="transition-delay:0.5s">
-                <div class="feature-card">
-                    <div class="feature-icon icon-green">📄</div>
-                    <h5>PDF Progress Reports</h5>
-                    <p>Generate professional progress reports on demand — perfect for sharing with teachers, therapists, or healthcare providers to support your child's journey.</p>
-                </div>
+
+            <!-- Pattern Detection -->
+            <div class="feature-card">
+                <div class="feature-icon" style="background: linear-gradient(135deg, rgba(236,72,153,0.15), rgba(236,72,153,0.05));">🔍</div>
+                <h3>AI Pattern Detection & Alerts</h3>
+                <p>The AI continuously monitors frame-level data to detect repeated mistakes or inconsistent landmarks. When a pattern is found, parents are instantly alerted with a targeted recommendation to adjust the exercise plan.</p>
+                <div class="feature-tag tag-pink">Early Warning System</div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ══════════════════════════  HOW IT WORKS  ══════════════════════════ -->
-<section class="section hiw-section" id="how-it-works">
-    <div class="container">
-        <div class="text-center mb-5 reveal">
-            <div class="section-badge">🗺️ How It Works</div>
-            <h2 class="section-title">Up and running in minutes</h2>
-            <p class="section-subtitle">No installation, no complexity — just sign up and start training right away.</p>
+
+<!-- ═══ EXERCISE SHOWCASE ═══════════════════════════════ -->
+<section id="exercises" style="background:white;">
+    <div class="section-wrap">
+        <div class="section-header">
+            <div class="section-label">🤸 Brain Quests</div>
+            <h2>Exercises Designed to Challenge & Delight</h2>
+            <p>Every exercise is scientifically matched to the child's age and fine motor development stage. Difficulty adapts automatically as the child improves.</p>
         </div>
-        <div class="row g-3">
-            <div class="col-6 col-md-3 step-connector reveal">
-                <div class="step-card">
-                    <div class="step-number">1</div>
-                    <span class="step-emoji">📋</span>
-                    <h5>Sign Up Free</h5>
-                    <p>Create a parent account in under 60 seconds — no credit card required.</p>
-                </div>
+        <div class="exercises-scroll">
+            <div class="ex-card" style="border-top: 4px solid var(--purple);">
+                <div class="ex-emoji">🖐️</div>
+                <h4>Finger Yoga</h4>
+                <p>Slow, controlled finger stretches that build spatial awareness and concentration.</p>
+                <div class="ex-level"><div class="ex-dot active"></div><div class="ex-dot active"></div><div class="ex-dot"></div><div class="ex-dot"></div><div class="ex-dot"></div><span style="font-size:0.72rem;color:var(--gray);margin-left:6px;">Beginner</span></div>
             </div>
-            <div class="col-6 col-md-3 step-connector reveal" style="transition-delay:0.1s">
-                <div class="step-card">
-                    <div class="step-number">2</div>
-                    <span class="step-emoji">👶</span>
-                    <h5>Add Your Child</h5>
-                    <p>Create a child profile and they get a simple 6-digit code to log in on their own.</p>
-                </div>
+            <div class="ex-card" style="border-top: 4px solid var(--pink);">
+                <div class="ex-emoji">🤙</div>
+                <h4>Rock-Paper-Scissors Flow</h4>
+                <p>A sequenced gesture challenge that trains rapid motor switching and decision making.</p>
+                <div class="ex-level"><div class="ex-dot active"></div><div class="ex-dot active"></div><div class="ex-dot active"></div><div class="ex-dot"></div><div class="ex-dot"></div><span style="font-size:0.72rem;color:var(--gray);margin-left:6px;">Intermediate</span></div>
             </div>
-            <div class="col-6 col-md-3 step-connector reveal" style="transition-delay:0.2s">
-                <div class="step-card">
-                    <div class="step-number">3</div>
-                    <span class="step-emoji">🖐️</span>
-                    <h5>Start Training</h5>
-                    <p>Your child picks an exercise, allows camera access, and trains using hand gestures.</p>
-                </div>
+            <div class="ex-card" style="border-top: 4px solid var(--teal);">
+                <div class="ex-emoji">✌️</div>
+                <h4>Mirror Maestro</h4>
+                <p>Copy the instructor's hand position with both hands simultaneously — boosts bilateral coordination.</p>
+                <div class="ex-level"><div class="ex-dot active"></div><div class="ex-dot active"></div><div class="ex-dot active"></div><div class="ex-dot active"></div><div class="ex-dot"></div><span style="font-size:0.72rem;color:var(--gray);margin-left:6px;">Advanced</span></div>
             </div>
-            <div class="col-6 col-md-3 reveal" style="transition-delay:0.3s">
-                <div class="step-card">
-                    <div class="step-number">4</div>
-                    <span class="step-emoji">📈</span>
-                    <h5>Track Progress</h5>
-                    <p>Review analytics, download reports, and watch your child's cognitive skills grow.</p>
-                </div>
+            <div class="ex-card" style="border-top: 4px solid var(--gold);">
+                <div class="ex-emoji">👌</div>
+                <h4>Precision Pinch</h4>
+                <p>Fine-grain pinch movements targeting micro-motor control — great for writing improvement.</p>
+                <div class="ex-level"><div class="ex-dot active"></div><div class="ex-dot active"></div><div class="ex-dot active"></div><div class="ex-dot active"></div><div class="ex-dot active"></div><span style="font-size:0.72rem;color:var(--gray);margin-left:6px;">Expert</span></div>
+            </div>
+            <div class="ex-card" style="border-top: 4px solid var(--blue);">
+                <div class="ex-emoji">🙏</div>
+                <h4>Palm Focus</h4>
+                <p>Slow open-close palm breathing exercises that link movement with mindfulness and calm.</p>
+                <div class="ex-level"><div class="ex-dot active"></div><div class="ex-dot"></div><div class="ex-dot"></div><div class="ex-dot"></div><div class="ex-dot"></div><span style="font-size:0.72rem;color:var(--gray);margin-left:6px;">Starter</span></div>
+            </div>
+            <div class="ex-card" style="border-top: 4px solid var(--green);">
+                <div class="ex-emoji">🤏</div>
+                <h4>Thumb Sprint</h4>
+                <p>Speed-based thumb tapping sequences to improve reaction time and thumb-index dexterity.</p>
+                <div class="ex-level"><div class="ex-dot active"></div><div class="ex-dot active"></div><div class="ex-dot active"></div><div class="ex-dot"></div><div class="ex-dot"></div><span style="font-size:0.72rem;color:var(--gray);margin-left:6px;">Intermediate</span></div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ══════════════════════════  TWO PORTALS  ══════════════════════════ -->
-<section class="section" id="portals">
-    <div class="container">
-        <div class="text-center mb-5 reveal">
-            <div class="section-badge">👥 Two Portals</div>
-            <h2 class="section-title">Built for both parents<br>and children</h2>
-            <p class="section-subtitle">Separate experiences tailored to each user — powerful tools for parents, playful simplicity for kids.</p>
-        </div>
-        <div class="row g-4">
-            <div class="col-md-6 reveal">
-                <div class="portal-card portal-parent">
-                    <span class="portal-icon">🧑‍💼</span>
-                    <h4>Parent Portal</h4>
-                    <p>A powerful command centre to oversee your child's brain training journey with deep insights.</p>
-                    <ul>
-                        <li>Create & manage child profiles</li>
-                        <li>Real-time activity monitoring</li>
-                        <li>Detailed analytics & charts</li>
-                        <li>AI-powered recommendations</li>
-                        <li>Download PDF reports</li>
-                    </ul>
-                    <a href="{{ url_for('auth.register') }}" class="btn-portal">
-                        Create Parent Account <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
+
+<!-- ═══ REPORT SECTION ══════════════════════════════════ -->
+<section style="background: radial-gradient(ellipse at center, rgba(139,92,246,0.05) 0%, transparent 70%), var(--bg);">
+    <div class="section-wrap">
+        <div class="report-section">
+            <div>
+                <div class="section-label">📄 Smart Reporting</div>
+                <h2 style="font-size:2.5rem;font-weight:900;letter-spacing:-.02em;margin-bottom:1.2rem;">Every Session<br>Becomes <span class="text-gradient">Insight.</span></h2>
+                <p style="color:var(--gray);margin-bottom:1.5rem;line-height:1.75;">BrainCoach AI doesn't just score sessions — it synthesises them into a clear, printable report that any parent or teacher can understand at a glance.</p>
+                <ul style="list-style:none;display:flex;flex-direction:column;gap:0.75rem;">
+                    <li style="display:flex;align-items:center;gap:12px;font-size:0.95rem;"><span style="color:var(--green);font-size:1.1rem;">✔</span> Average accuracy per session</li>
+                    <li style="display:flex;align-items:center;gap:12px;font-size:0.95rem;"><span style="color:var(--green);font-size:1.1rem;">✔</span> Consistency and composite grade (A–F)</li>
+                    <li style="display:flex;align-items:center;gap:12px;font-size:0.95rem;"><span style="color:var(--green);font-size:1.1rem;">✔</span> AI pattern detection commentary</li>
+                    <li style="display:flex;align-items:center;gap:12px;font-size:0.95rem;"><span style="color:var(--green);font-size:1.1rem;">✔</span> Personalised next-step recommendations</li>
+                </ul>
+                <a href="{{ url_for('auth.login') }}" class="btn-glow" style="margin-top:2rem;">
+                    View Sample Report <i class="bi bi-file-earmark-arrow-down"></i>
+                </a>
             </div>
-            <div class="col-md-6 reveal" style="transition-delay:0.15s">
-                <div class="portal-card portal-student">
-                    <span class="portal-icon">🧒</span>
-                    <h4>Student Portal</h4>
-                    <p>A fun, distraction-free zone where children can focus on their exercises and see their badges.</p>
-                    <ul>
-                        <li>Simple 6-digit access code login</li>
-                        <li>Engaging interactive exercises</li>
-                        <li>Real-time hand-tracking feedback</li>
-                        <li>Personal progress tracking</li>
-                        <li>Achievement badges & streaks</li>
-                    </ul>
-                    <a href="{{ url_for('student.login') }}" class="btn-portal">
-                        Student Login <i class="fas fa-arrow-right"></i>
-                    </a>
+            <div class="report-mockup">
+                <div style="font-size:1rem;font-weight:900;margin-bottom:1.5rem;display:flex;align-items:center;gap:10px;">
+                    <span style="font-size:1.5rem;">📊</span> Performance Report
+                    <span style="margin-left:auto;font-size:0.75rem;padding:4px 12px;background:rgba(16,185,129,0.1);color:var(--green);border-radius:50px;font-weight:700;">Completed</span>
+                </div>
+                <div class="report-row">
+                    <span style="font-size:0.85rem;font-weight:600;">Accuracy</span>
+                    <div class="report-bar-track"><div class="report-bar-fill" style="width:88%;background:linear-gradient(90deg,var(--purple),var(--pink));"></div></div>
+                    <strong style="color:var(--purple);">88%</strong>
+                </div>
+                <div class="report-row">
+                    <span style="font-size:0.85rem;font-weight:600;">Consistency</span>
+                    <div class="report-bar-track"><div class="report-bar-fill" style="width:76%;background:linear-gradient(90deg,var(--blue),var(--purple));"></div></div>
+                    <strong style="color:var(--blue);">76%</strong>
+                </div>
+                <div class="report-row">
+                    <span style="font-size:0.85rem;font-weight:600;">Composite</span>
+                    <div class="report-bar-track"><div class="report-bar-fill" style="width:82%;background:linear-gradient(90deg,var(--teal),var(--blue));"></div></div>
+                    <strong style="color:var(--teal);">82</strong>
+                </div>
+                <div style="margin-top:1.5rem;padding:1.2rem;background:#f8fafc;border-radius:14px;font-size:0.82rem;">
+                    <div style="font-weight:700;margin-bottom:6px;">🤖 AI Recommendation</div>
+                    <div style="color:var(--gray);">Excellent progress! Continue Finger Yoga for 3 more sessions before advancing to Mirror Maestro. Focus on left-hand stability.</div>
+                </div>
+                <div style="margin-top:1.2rem;display:flex;justify-content:space-between;align-items:center;">
+                    <div style="font-size:2rem;font-weight:900;padding:10px 20px;background:linear-gradient(135deg,rgba(139,92,246,0.12),rgba(236,72,153,0.08));border-radius:12px;color:var(--purple-dark);">A</div>
+                    <div style="font-size:0.78rem;color:var(--gray);">Score: 880 pts</div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ══════════════════════════  CTA  ══════════════════════════ -->
+
+<!-- ═══ WHO IS IT FOR ════════════════════════════════════ -->
+<section style="background:white;">
+    <div class="section-wrap">
+        <div class="section-header">
+            <div class="section-label">👨‍👩‍👧 Built For You</div>
+            <h2>Who is BrainCoach AI For?</h2>
+            <p>Whether you're a parent, a student, or an educator — there's a tailored experience waiting for you.</p>
+        </div>
+        <div class="who-grid">
+            <div class="who-card">
+                <div class="who-avatar" style="background:linear-gradient(135deg, rgba(139,92,246,0.15), rgba(139,92,246,0.05));">👨‍👩‍👧</div>
+                <h3>Parents</h3>
+                <p>Manage multiple children from a single dashboard. Track real-time progress, view AI recommendations, download performance reports, and adjust training plans — all from your phone or laptop.</p>
+                <a href="{{ url_for('auth.login') }}" style="color:var(--purple);font-weight:700;text-decoration:none;font-size:0.9rem;display:inline-flex;align-items:center;gap:4px;margin-top:1rem;">Parent Login <i class="bi bi-arrow-right"></i></a>
+            </div>
+            <div class="who-card">
+                <div class="who-avatar" style="background:linear-gradient(135deg, rgba(236,72,153,0.15), rgba(236,72,153,0.05));">🧒</div>
+                <h3>Children (Ages 5–15)</h3>
+                <p>No passwords to remember — just a 6-digit code. Kids see a fun, gamified interface with animated feedback, star ratings, emoji celebrations, and a Trophy Case to collect achievements.</p>
+                <a href="{{ url_for('student.login') }}" style="color:var(--pink);font-weight:700;text-decoration:none;font-size:0.9rem;display:inline-flex;align-items:center;gap:4px;margin-top:1rem;">Student Login <i class="bi bi-arrow-right"></i></a>
+            </div>
+            <div class="who-card">
+                <div class="who-avatar" style="background:linear-gradient(135deg, rgba(20,184,166,0.15), rgba(20,184,166,0.05));">👩‍🏫</div>
+                <h3>Educators & Therapists</h3>
+                <p>Assign specific exercises to individual students, monitor progression across sessions, detect fine-motor difficulties early with AI pattern alerts, and generate professional reports for clinical reviews.</p>
+                <a href="{{ url_for('auth.register') }}" style="color:var(--teal);font-weight:700;text-decoration:none;font-size:0.9rem;display:inline-flex;align-items:center;gap:4px;margin-top:1rem;">Create Account <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ═══ CTA ══════════════════════════════════════════════ -->
 <section class="cta-section">
-    <div class="container">
-        <h2>Ready to train smarter?</h2>
-        <p>Join BrainCoach AI today and give your child the cognitive edge they deserve — it's completely free to start.</p>
-        <div>
-            <a href="{{ url_for('auth.register') }}" class="btn-cta-white">
-                🚀 Get Started Free
+    <div>
+        <div style="font-size:3rem;margin-bottom:1rem;">🧠✨</div>
+        <h2>Ready to unlock your child's potential?</h2>
+        <p>Join BrainCoach AI today. Set up takes less than 2 minutes, and the results can last a lifetime.</p>
+        <div class="cta-btns">
+            <a href="{{ url_for('auth.login') }}" class="btn-white" id="cta-start-btn">
+                🚀 Start Now — It's Free
             </a>
-            <a href="{{ url_for('auth.login') }}" class="btn-cta-ghost">
-                Sign In
+            <a href="{{ url_for('student.login') }}" class="btn-white-outline">
+                <i class="bi bi-person-badge"></i> Student Login
             </a>
         </div>
     </div>
 </section>
 
-<!-- ══════════════════════════  FOOTER  ══════════════════════════ -->
-<footer class="landing-footer">
-    <div class="container">
-        <p style="margin:0;">
-            🧠 <strong style="color:white;">BrainCoach AI</strong> &nbsp;·&nbsp;
-            Made with ❤️ for better brain training &nbsp;·&nbsp;
-            <a href="{{ url_for('auth.login') }}">Login</a> &nbsp;·&nbsp;
-            <a href="{{ url_for('auth.register') }}">Register</a>
-        </p>
-    </div>
+
+<!-- ═══ FOOTER ═══════════════════════════════════════════ -->
+<footer>
+    <div style="margin-bottom:0.5rem;"><strong>BrainCoach AI</strong> — Empowering Kids through Technology</div>
+    <div>Built with ❤️ using Flask · MediaPipe · ReportLab</div>
 </footer>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Sticky nav scroll effect
-    window.addEventListener('scroll', () => {
-        const nav = document.getElementById('mainNav');
-        if (window.scrollY > 20) {
-            nav.classList.add('scrolled');
-        } else {
-            nav.classList.remove('scrolled');
-        }
-    });
+    // Animated score counter
+    let score = 85;
+    setInterval(() => {
+        score = Math.min(99, Math.max(75, score + (Math.random() > 0.5 ? 1 : -1)));
+        const el = document.getElementById('live-score');
+        if (el) el.textContent = Math.round(score) + '%';
+    }, 1500);
 
-    // Scroll reveal
-    const revealEls = document.querySelectorAll('.reveal');
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                observer.unobserve(entry.target);
-            }
+    // Smooth scroll for nav links
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener('click', e => {
+            const target = document.querySelector(link.getAttribute('href'));
+            if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
         });
-    }, { threshold: 0.12 });
-    revealEls.forEach(el => observer.observe(el));
+    });
 </script>
+
 </body>
 </html>

@@ -5,7 +5,7 @@ from datetime import datetime
 
 dashboard = Blueprint('dashboard', __name__)
 
-@dashboard.route('/')
+@dashboard.route('/dashboard')
 @login_required
 def index():
     children = Child.query.filter_by(parent_id=current_user.id).all()

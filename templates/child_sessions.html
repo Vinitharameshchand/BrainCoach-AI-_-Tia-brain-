@@ -256,6 +256,14 @@
                 <strong>AI Pattern Detected:</strong> Our analysis noticed specific patterns in this session that may help improve performance.
             </div>
             {% endif %}
+
+            {% if session.result_status == 'Completed' %}
+            <div class="text-end mt-3">
+                <a href="{{ url_for('session.download_report', session_id=session.id) }}" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-download"></i> Download Performance Report
+                </a>
+            </div>
+            {% endif %}
         </div>
         {% endfor %}
     {% else %}

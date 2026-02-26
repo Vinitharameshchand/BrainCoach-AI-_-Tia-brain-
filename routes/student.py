@@ -235,9 +235,49 @@ def api_complete_session():
     db.session.add(score_entry)
     db.session.commit()
 
+    # Trigger PDF generation
+    try:
+        pdf_dir = os.path.join('reports', f'child_{sess.child_id}')
+        if not os.path.exists(pdf_dir):
+            os.makedirs(pdf_dir)
+
+        pdf_path = os.path.join(pdf_dir, f'session_{session_id}.pdf')
+        generate_session_report(sess, pdf_path)
+    except Exception as e:
+        print(f"PDF generation failed: {e}")
+
     return jsonify({
         "status": "success",
         "redirect": url_for('student.dashboard'),
         "avg_accuracy": avg_accuracy,
         "grade": sess.performance_grade
     })
+
+@student.route('/sessions/download/<int:session_id>')
+@student_login_required
+def download_report(session_id):
+    from flask import send_file
+    from utils.pdf_generator import generate_session_report
+    import os
+    
+    student_id = session.get('student_id')
+    sess = Session.query.get_or_404(session_id)
+    
+    # Verify session ownership
+    if sess.child_id != student_id:
+        return jsonify({"error": "Unauthorized"}), 403
+    
+    pdf_dir = os.path.join('reports', f'child_{sess.child_id}')
+    pdf_path = os.path.join(pdf_dir, f'session_{session_id}.pdf')
+    
+    if not os.path.exists(pdf_path):
+        os.makedirs(pdf_dir, exist_ok=True)
+        try:
+            generate_session_report(sess, pdf_path)
+        except Exception as e:
+            print(f"Error generating PDF: {e}")
+            return jsonify({"error": f"Failed to generate report: {e}"}), 500
+
+    if os.path.exists(pdf_path):
+        return send_file(pdf_path, as_attachment=True)
+    return jsonify({"error": "Report not found"}), 404

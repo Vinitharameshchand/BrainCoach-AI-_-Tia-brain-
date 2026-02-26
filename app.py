@@ -37,6 +37,10 @@ def create_app():
     from routes.student import student as student_blueprint
     app.register_blueprint(student_blueprint)
 
+    @app.route('/')
+    def landing():
+        return render_template('landing.html')
+
     # Create database tables
     with app.app_context():
         db.create_all()

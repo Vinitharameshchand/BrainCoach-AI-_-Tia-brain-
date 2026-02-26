@@ -305,6 +305,14 @@
                                 <strong>Pattern Detected:</strong> Our AI noticed some patterns in your performance. Keep practicing to improve!
                             </div>
                             {% endif %}
+                            
+                            {% if session.result_status == 'Completed' %}
+                            <div class="text-end mt-3">
+                                <a href="{{ url_for('student.download_report', session_id=session.id) }}" class="btn btn-primary" style="border-radius: 50px;">
+                                    <i class="bi bi-download"></i> Download Report
+                                </a>
+                            </div>
+                            {% endif %}
                         </div>
                     {% endfor %}
                 {% else %}

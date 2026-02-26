@@ -229,7 +229,15 @@
         <div class="session-container" id="split-container">
             <div class="view-card" id="left-view">
                 <div class="view-label">Watch & Copy 📺</div>
-                <video id="exerciseVideo" src="{{ exercise.video_url or 'https://www.w3schools.com/html/mov_bbb.mp4' }}" loop muted autoplay></video>
+                <iframe 
+                    id="exerciseVideo"
+                    style="width: 100%; height: 100%; object-fit: cover; border: none;"
+                    src="https://www.youtube.com/embed/eW3MxHMuty0?autoplay=1&mute=1&loop=1&playlist=eW3MxHMuty0&controls=0&modestbranding=1" 
+                    title="Hand Yoga Video" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    allowfullscreen>
+                </iframe>
             </div>
 
             <div class="view-card" id="right-view">

@@ -10,11 +10,11 @@ def generate_session_report(session_obj, output_path):
 
     # Header
     c.setFont("Helvetica-Bold", 24)
-    c.setFillcolor(colors.HexColor("#6366f1"))
+    c.setFillColor(colors.HexColor("#6366f1"))
     c.drawString(1*inch, height - 1*inch, "BrainCoach AI - Performance Report")
     
     c.setFont("Helvetica", 12)
-    c.setFillcolor(colors.black)
+    c.setFillColor(colors.black)
     c.drawString(1*inch, height - 1.5*inch, f"Child Name: {session_obj.child.name}")
     c.drawString(1*inch, height - 1.7*inch, f"Exercise: {session_obj.exercise.title}")
     c.drawString(1*inch, height - 1.9*inch, f"Date: {session_obj.start_time.strftime('%Y-%m-%d %H:%M')}")
@@ -25,8 +25,10 @@ def generate_session_report(session_obj, output_path):
     c.drawString(1.2*inch, height - 2.8*inch, "Session Summary")
     
     c.setFont("Helvetica", 12)
-    c.drawString(1.2*inch, height - 3.1*inch, f"Average Accuracy: {session_obj.avg_accuracy:.2f}%")
-    c.drawString(1.2*inch, height - 3.3*inch, f"Total Score: {session_obj.total_score}")
+    avg_acc = session_obj.avg_accuracy if session_obj.avg_accuracy is not None else 0.0
+    tot_score = session_obj.total_score if session_obj.total_score is not None else 0
+    c.drawString(1.2*inch, height - 3.1*inch, f"Average Accuracy: {avg_acc:.2f}%")
+    c.drawString(1.2*inch, height - 3.3*inch, f"Total Score: {tot_score}")
 
     # AI Recommendation
     c.setFont("Helvetica-Bold", 14)
