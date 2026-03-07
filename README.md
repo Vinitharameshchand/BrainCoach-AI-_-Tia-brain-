@@ -75,3 +75,4 @@ See `docs/` folder for detailed documentation:
 - AI-powered recommendations
 
 **🎓 Made with ❤️ for better brain training**
+**🎓 by neurvinch**
