@@ -170,16 +170,17 @@ try {
 
     hands.setOptions({
         maxNumHands: 1,
-        modelComplexity: 1,
-        minDetectionConfidence: 0.7,
-        minTrackingConfidence: 0.7
+        modelComplexity: 0, // Lowered from 1 to 0 for faster tracking performance
+        minDetectionConfidence: 0.5, // Lowered from 0.7 for faster detection
+        minTrackingConfidence: 0.5 // Lowered from 0.7 to maintain tracking easier
     });
 
     hands.onResults(onResults);
 
     camera = new Camera(videoElement, {
         onFrame: async () => {
-            if (isRunning && hands) {
+            // Ensure video stream is fully loaded and ready before processing frames
+            if (isRunning && hands && videoElement.readyState >= 2) {
                 await hands.send({ image: videoElement });
             }
         },
