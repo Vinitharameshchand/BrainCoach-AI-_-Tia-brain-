@@ -153,6 +153,7 @@
             font-weight: bold;
             box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
             transition: transform 0.2s;
+            cursor: pointer;
         }
 
         .btn-start-adventure:hover {
@@ -169,6 +170,7 @@
             font-weight: bold;
             box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
             transition: transform 0.2s;
+            cursor: pointer;
         }
 
         .btn-stop-adventure:hover {
@@ -334,6 +336,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
 
     <script>
+        window.onerror = function(msg, url, line, col, error) {
+            alert("JS Error: " + msg + " (Line: " + line + ")");
+            return false;
+        };
+
         // Configuration
         const sessionId = document.getElementById('session_id').value;
         const duration = parseInt(document.getElementById('duration').value);
@@ -387,11 +394,23 @@
             canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
             canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
 
-            if (results.multiHandLandmarks) {
+            // DEBUG INFO
+            canvasCtx.font = "20px Arial";
+            canvasCtx.fillStyle = "white";
+            canvasCtx.fillText("Camera Active. Searching for hands...", 20, 30);
+
+            if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                canvasCtx.fillStyle = "lime";
+                canvasCtx.fillText("HANDS DETECTED: " + results.multiHandLandmarks.length, 20, 60);
+
                 for (const landmarks of results.multiHandLandmarks) {
                     drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {color: '#667eea', lineWidth: 5});
                     drawLandmarks(canvasCtx, landmarks, {color: '#764ba2', lineWidth: 2, radius: 5});
                 }
+            } else {
+                canvasCtx.fillStyle = "red";
+                canvasCtx.fillText("NO HANDS IN FRAME", 20, 60);
+            }
 
                 // Calculate accuracy (simplified)
                 const accuracy = Math.min(95, 60 + Math.random() * 30);
@@ -411,7 +430,6 @@
                         })
                     });
                 }
-            }
 
             canvasCtx.restore();
         });
@@ -464,7 +482,9 @@
             // Start camera
             camera = new Camera(webcamElement, {
                 onFrame: async () => {
-                    await hands.send({image: webcamElement});
+                    if (webcamElement.readyState >= 2) {
+                        await hands.send({image: webcamElement});
+                    }
                 },
                 width: 1280,
                 height: 720

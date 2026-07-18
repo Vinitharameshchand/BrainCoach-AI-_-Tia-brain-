@@ -1,5 +1,12 @@
 import { AdvancedScoringSystem } from './scoring_advanced.js';
 
+// Access MediaPipe globals from window since they are loaded via CDN scripts
+const Hands = window.Hands;
+const Camera = window.Camera;
+const drawConnectors = window.drawConnectors;
+const drawLandmarks = window.drawLandmarks;
+const HAND_CONNECTIONS = window.HAND_CONNECTIONS;
+
 // DOM Elements
 const videoElement = document.getElementById('webcam');
 const canvasElement = document.getElementById('output_canvas');
@@ -78,7 +85,15 @@ function onResults(results) {
     canvasCtx.save();
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
+    // DEBUG INFO
+    canvasCtx.font = "20px Arial";
+    canvasCtx.fillStyle = "white";
+    canvasCtx.fillText("Camera Active. Searching for hands...", 20, 30);
+
     if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+        canvasCtx.fillStyle = "lime";
+        canvasCtx.fillText("HANDS DETECTED: " + results.multiHandLandmarks.length, 20, 60);
+        
         for (const landmarks of results.multiHandLandmarks) {
             // Draw hand landmarks
             if (typeof drawConnectors !== 'undefined') {
@@ -96,6 +111,9 @@ function onResults(results) {
                 updateBackend(accuracy, landmarks, frameCount);
             }
         }
+    } else {
+        canvasCtx.fillStyle = "red";
+        canvasCtx.fillText("NO HANDS IN FRAME", 20, 60);
     }
     canvasCtx.restore();
 }
