@@ -41,6 +41,12 @@ def create_app():
     def landing():
         return render_template('landing.html')
 
+    @app.route('/seed')
+    def run_seed():
+        from scripts.seed import seed_data
+        seed_data()
+        return "Seed complete!"
+
     # Create database tables
     with app.app_context():
         db.create_all()
