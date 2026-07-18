@@ -43,9 +43,25 @@ def create_app():
 
     @app.route('/seed')
     def run_seed():
-        from scripts.seed import seed_data
-        seed_data()
-        return "Seed complete!"
+        from models import db, Module, Exercise
+        try:
+            if not Module.query.filter_by(name='Beginner Finger Yoga').first():
+                module = Module(name='Beginner Finger Yoga', category='Concentration', difficulty='Easy')
+                db.session.add(module)
+                db.session.commit()
+                
+                exercise = Exercise(
+                    module_id=module.id,
+                    title='Basic Finger Yoga',
+                    video_url='https://www.w3schools.com/html/mov_bbb.mp4',
+                    accuracy_threshold=80.0,
+                    duration_seconds=60
+                )
+                db.session.add(exercise)
+                db.session.commit()
+            return "Seed complete! You can now check your dashboard."
+        except Exception as e:
+            return f"Error: {str(e)}"
 
     # Create database tables
     with app.app_context():
